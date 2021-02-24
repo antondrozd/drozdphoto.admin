@@ -1,0 +1,19 @@
+.photo {
+  cursor: grab;
+  position: relative;
+
+  &:hover {
+    .delete-icon {
+      opacity: 1;
+    }
+  }
+
+  .delete-icon {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    cursor: pointer;
+  }
+}
