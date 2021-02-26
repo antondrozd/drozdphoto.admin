@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Upload, Button, Spin, Modal } from 'antd'
+import { Upload, Button, Spin, Modal, Empty } from 'antd'
 import {
   PlusOutlined,
   RedoOutlined,
@@ -81,27 +81,33 @@ const GalleryEditor = () => {
             axis={'xy'}
           />
         ) : (
-          !isLoading && 'Gallery is empty'
+          !isLoading && (
+            <Empty description="Немає фото" style={{ padding: '10px 20px' }} />
+          )
         )}
       </Spin>
+
       <Dragger
         name="file"
         multiple={true}
         customRequest={uploadRequest}
         showUploadList={false}
         accept="image/png, image/jpeg"
+        height={80}
       >
         <PlusOutlined />
       </Dragger>
-      <Button type="primary" shape="round" disabled={!isEdited} onClick={onSave}>
-        Save
-      </Button>
-      <Button type="primary" shape="circle" disabled={!isEdited} onClick={onRefresh}>
-        <RedoOutlined />
-      </Button>
-      <Button danger shape="round" disabled={_.isEmpty(photos)} onClick={onClear}>
-        Clear gallery
-      </Button>
+      <div className="controls">
+        <Button shape="round" disabled={!isEdited} onClick={onSave}>
+          Зберегти
+        </Button>
+        <Button shape="circle" disabled={!isEdited} onClick={onRefresh}>
+          <RedoOutlined />
+        </Button>
+        <Button danger shape="round" disabled={_.isEmpty(photos)} onClick={onClear}>
+          Очистити галерею
+        </Button>
+      </div>
     </>
   )
 }

@@ -15,8 +15,11 @@ import {
 } from '../redux/gallery/gallery.actions'
 
 export interface IPhotoSet {
+  id: string
   label: string
+  routePath: string
   coverImgSrc: string
+  type: string
   photos: IPhoto[]
 }
 
@@ -28,7 +31,7 @@ export interface IPhoto {
   height: number
 }
 
-export interface IActionFethPhotosRequest
+export interface IActionFetchPhotosRequest
   extends TypedAction<typeof FETCH_PHOTOS_REQUEST> {}
 
 export interface IActionFetchPhotoSuccess
@@ -76,7 +79,7 @@ export interface IActionUploadPhotoFailure
 }
 
 export type IGalleryActions =
-  | IActionFethPhotosRequest
+  | IActionFetchPhotosRequest
   | IActionFetchPhotoSuccess
   | IActionFetchPhotosFailure
   | IActionReorderPhotos
