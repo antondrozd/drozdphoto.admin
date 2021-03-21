@@ -5,3 +5,5 @@ export interface TypedAction<T extends string> {
 }
 
 export interface IStore extends Store {}
+
+export type PhotosetType = 'album' | 'serie'

@@ -21,16 +21,13 @@ export const SAVE_EDITED_REQUEST = 'SAVE_EDITED_REQUEST'
 export const SAVE_EDITED_SUCCESS = 'SAVE_EDITED_SUCCESS'
 export const SAVE_EDITED_FAILURE = 'SAVE_EDITED_FAILURE'
 
-export const fetchPhotosRequest = (): ThunkAction<
-  void,
-  IStore,
-  unknown,
-  IGalleryActions
-> => async (dispatch) => {
+export const fetchPhotosRequest = (
+  photosetID: string
+): ThunkAction<void, IStore, unknown, IGalleryActions> => async (dispatch) => {
   dispatch({ type: FETCH_PHOTOS_REQUEST })
 
   try {
-    const docSnapshot = await db.doc('sets/testset').get()
+    const docSnapshot = await db.doc(`sets/${photosetID}`).get()
 
     const { photos } = docSnapshot.data() as IPhotoSet
 
@@ -65,15 +62,16 @@ export const clearGallery = (): IGalleryActions => ({
 })
 
 export const saveEditedRequest = (
-  photos: IPhoto[],
+  photosetID: string,
+  photos: IPhoto[]
 ): ThunkAction<void, IStore, unknown, IGalleryActions> => async (dispatch, getState) => {
   dispatch({ type: SAVE_EDITED_REQUEST })
 
   try {
-    await db.doc('sets/testset').update('photos', photos)
+    await db.doc(`sets/${photosetID}`).update('photos', photos)
 
     getState().gallery.editing.photosToDelete.forEach(
-      async (photo) => await storage.ref().child(photo.name).delete(),
+      async (photo) => await storage.ref().child(photo.name).delete()
     )
 
     dispatch(saveEditedSuccess())
@@ -94,7 +92,8 @@ const saveEditedFailure = (error: any): IGalleryActions => ({
 })
 
 export const uploadPhotoRequest = (
-  file: File,
+  photosetID: string,
+  file: File
 ): ThunkAction<void, IStore, unknown, IGalleryActions> => async (dispatch: any) => {
   dispatch({ type: UPLOAD_PHOTO_REQUEST })
 
@@ -121,7 +120,7 @@ export const uploadPhotoRequest = (
     }
 
     await db
-      .doc('sets/testset')
+      .doc(`sets/${photosetID}`)
       .update('photos', firebase.firestore.FieldValue.arrayUnion(photo))
 
     dispatch(uploadPhotoSuccess(photo))

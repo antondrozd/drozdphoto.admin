@@ -1,4 +1,4 @@
-import { TypedAction } from './common.interfaces'
+import { PhotosetType, TypedAction } from './common.interfaces'
 import {
   FETCH_PHOTOS_REQUEST,
   FETCH_PHOTOS_FAILURE,
@@ -19,7 +19,7 @@ export interface IPhotoSet {
   label: string
   routePath: string
   coverImgSrc: string
-  type: string
+  type: PhotosetType
   photos: IPhoto[]
 }
 

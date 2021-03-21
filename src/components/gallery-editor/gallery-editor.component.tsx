@@ -27,9 +27,12 @@ import {
 import './gallery-editor.styles.scss'
 
 const { Dragger } = Upload
-const { confirm } = Modal
 
-const GalleryEditor = () => {
+interface IProps {
+  photosetID: string
+}
+
+const GalleryEditor = ({ photosetID }: IProps) => {
   const photos = useSelector(selectPhotos)
   const isEdited = useSelector(selectIsEdited)
   const isLoading = useSelector(selectIsLoading)
@@ -37,10 +40,11 @@ const GalleryEditor = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(fetchPhotosRequest())
-  }, [dispatch])
+    dispatch(fetchPhotosRequest(photosetID))
+  }, [dispatch, photosetID])
 
-  const uploadRequest = ({ file }: { file: File }) => dispatch(uploadPhotoRequest(file))
+  const uploadRequest = ({ file }: { file: File }) =>
+    dispatch(uploadPhotoRequest(photosetID, file))
 
   const onSortStart = () => document.body.classList.add('grabbing')
 
@@ -54,12 +58,12 @@ const GalleryEditor = () => {
     document.body.classList.remove('grabbing')
   }
 
-  const onRefresh = () => dispatch(fetchPhotosRequest())
+  const onRefresh = () => dispatch(fetchPhotosRequest(photosetID))
 
-  const onSave = () => dispatch(saveEditedRequest(photos))
+  const onSave = () => dispatch(saveEditedRequest(photosetID, photos))
 
   const onClear = () => {
-    confirm({
+    Modal.confirm({
       title: 'Ты что, сдурела?',
       icon: <DeleteOutlined style={{ color: 'red' }} />,
       content: 'Удалить все фото?',

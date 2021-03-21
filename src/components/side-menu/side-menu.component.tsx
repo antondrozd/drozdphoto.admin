@@ -1,44 +1,57 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
 import { Button, Menu } from 'antd'
-import { AppstoreOutlined, SettingOutlined, PlusOutlined } from '@ant-design/icons'
+import { AppstoreOutlined, PlusOutlined } from '@ant-design/icons'
 
-import { useActivePhotosetData } from '../../hooks/custom.hooks'
-import { fetchMenuItemsRequest } from '../../redux/menu/menu.actions'
-import { selectMenuItems } from '../../redux/menu/menu.selectors'
+import { db } from '../../firebase'
+import { IPhotoSet } from '../../interfaces/gallery.interfaces'
+import { IMenuItem } from '../../interfaces/menu.interface'
 
-const SideMenu = () => {
-  const { albums, series } = useSelector(selectMenuItems)
+interface IProps {
+  defaultActiveDropown: string
+  activePhotosetID: string
+}
 
-  const {
-    activePhotosetID: activePhotosetKey,
-    activePhotosetType,
-  } = useActivePhotosetData()
-  const [activePhotosetTypeKeys, setActivePhotosetTypeKeys] = useState([
-    `${activePhotosetType}s`,
-  ])
-
-  const dispatch = useDispatch()
-
-  const onOpenChange = (openKeys: React.ReactText[]) => {
-    setActivePhotosetTypeKeys(openKeys as string[])
-  }
+const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
+  const [activeDropowns, setActiveDropowns] = useState([defaultActiveDropown])
+  const [albumItems, setAlbumItems] = useState<IMenuItem[]>([])
+  const [serieItems, setSerieItems] = useState<IMenuItem[]>([])
 
   useEffect(() => {
-    dispatch(fetchMenuItemsRequest())
-  }, [dispatch])
+    db.collection('sets')
+      .get()
+      .then((snapshot) => {
+        const items = {
+          album: [] as IMenuItem[],
+          serie: [] as IMenuItem[],
+        }
+
+        snapshot.docs.forEach((doc) => {
+          const { routePath, label, id, type } = doc.data() as IPhotoSet
+
+          items[type].push({ routePath, label, id })
+        })
+
+        setAlbumItems(items.album)
+        setSerieItems(items.serie)
+      })
+      .catch(console.error)
+  }, [])
+
+  const onOpenChange = (openKeys: React.ReactText[]) => {
+    setActiveDropowns(openKeys as string[])
+  }
 
   return (
     <Menu
-      openKeys={activePhotosetTypeKeys}
+      openKeys={activeDropowns}
       onOpenChange={onOpenChange}
-      selectedKeys={[activePhotosetKey]}
+      selectedKeys={[activePhotosetID]}
       mode="inline"
       style={{ height: '100%' }}
     >
-      <Menu.SubMenu key="albums" icon={<AppstoreOutlined />} title="Альбоми">
-        {albums.map(({ label, routePath, id }) => {
+      <Menu.SubMenu key="album" icon={<AppstoreOutlined />} title="Альбоми">
+        {albumItems.map(({ label, routePath, id }) => {
           return (
             <Menu.Item key={id}>
               <Link to={`/editor/album${routePath}`}>{label}</Link>
@@ -52,8 +65,8 @@ const SideMenu = () => {
           </Button>
         </Menu.Item>
       </Menu.SubMenu>
-      <Menu.SubMenu key="series" icon={<AppstoreOutlined />} title="Серії">
-        {series.map(({ label, routePath, id }) => {
+      <Menu.SubMenu key="serie" icon={<AppstoreOutlined />} title="Серії">
+        {serieItems.map(({ label, routePath, id }) => {
           return (
             <Menu.Item key={id}>
               <Link to={`/editor/serie${routePath}`}>{label}</Link>
@@ -67,9 +80,6 @@ const SideMenu = () => {
           </Button>
         </Menu.Item>
       </Menu.SubMenu>
-      <Menu.Item key="settings" icon={<SettingOutlined />}>
-        <Link to="/settings">Налаштування</Link>
-      </Menu.Item>
     </Menu>
   )
 }
