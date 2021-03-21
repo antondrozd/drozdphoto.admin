@@ -17,10 +17,41 @@ import {
 export interface IPhotoSet {
   id: string
   label: string
+  descr: string
   routePath: string
-  coverImgSrc: string
+  coverImgSrc: string | null
   type: PhotosetType
   photos: IPhoto[]
+}
+
+export class PhotoSet implements IPhotoSet {
+  id: string
+  label: string
+  descr: string
+  routePath: string
+  coverImgSrc: string | null
+  type: PhotosetType
+  photos: IPhoto[]
+
+  constructor({
+    id,
+    label,
+    descr,
+    type,
+  }: {
+    id: string
+    label: string
+    descr: string
+    type: PhotosetType
+  }) {
+    this.id = id
+    this.label = label
+    this.descr = descr
+    this.routePath = `/${id}`
+    this.coverImgSrc = null
+    this.type = type
+    this.photos = []
+  }
 }
 
 export interface IPhoto {
