@@ -39,9 +39,12 @@ const GalleryEditor = ({ photosetID }: IProps) => {
 
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    dispatch(fetchPhotosRequest(photosetID))
-  }, [dispatch, photosetID])
+  useEffect(
+    () => {
+      dispatch(fetchPhotosRequest(photosetID))
+    },
+    [dispatch, photosetID]
+  )
 
   const uploadRequest = ({ file }: { file: File }) =>
     dispatch(uploadPhotoRequest(photosetID, file))

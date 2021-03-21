@@ -18,7 +18,8 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
   const [serieItems, setSerieItems] = useState<IMenuItem[]>([])
 
   useEffect(() => {
-    db.collection('sets')
+    db
+      .collection('sets')
       .get()
       .then((snapshot) => {
         const items = {

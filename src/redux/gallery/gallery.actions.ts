@@ -71,7 +71,11 @@ export const saveEditedRequest = (
     await db.doc(`sets/${photosetID}`).update('photos', photos)
 
     getState().gallery.editing.photosToDelete.forEach(
-      async (photo) => await storage.ref().child(photo.name).delete()
+      async (photo) =>
+        await storage
+          .ref()
+          .child(photo.name)
+          .delete()
     )
 
     dispatch(saveEditedSuccess())

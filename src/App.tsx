@@ -17,7 +17,7 @@ const App = () => {
       </Header>
       <Layout>
         <Switch>
-          <Route path="/editor/:photosetType/:id" component={GalleryEditorPage}></Route>
+          <Route path="/editor/:photosetType/:id" component={GalleryEditorPage} />
         </Switch>
       </Layout>
     </Layout>
