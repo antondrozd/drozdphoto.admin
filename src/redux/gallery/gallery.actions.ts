@@ -2,7 +2,7 @@ import { message } from 'antd'
 import { uid } from 'uid'
 import { ThunkAction } from 'redux-thunk'
 
-import firebase, { db, storage } from '../../firebase'
+import firebase, { db, storage, deletePhotos } from '../../firebase'
 import { getAspectRatioFromImageFile } from '../../utils'
 import { IPhoto, IGalleryActions, IPhotoSet } from '../../interfaces/gallery.interfaces'
 import { IStore } from '../../interfaces/common.interfaces'
@@ -70,13 +70,7 @@ export const saveEditedRequest = (
   try {
     await db.doc(`sets/${photosetID}`).update('photos', photos)
 
-    getState().gallery.editing.photosToDelete.forEach(
-      async (photo) =>
-        await storage
-          .ref()
-          .child(photo.name)
-          .delete()
-    )
+    deletePhotos(getState().gallery.editing.photosToDelete)
 
     dispatch(saveEditedSuccess())
     message.success('Saved')

@@ -1,5 +1,4 @@
-.photo {
-  cursor: grab;
+.side-menu-item {
   position: relative;
 
   &:hover {
@@ -10,15 +9,16 @@
 
   .delete-icon {
     position: absolute;
-    top: 7px;
-    right: 7px;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
     opacity: 0;
     transition-property: opacity, transform !important;
     transition-duration: 0.3s, 0.1s !important;
-    cursor: pointer;
+    z-index: 2;
 
     &:hover {
-      transform: scale(1.15);
+      transform: translateY(-50%) scale(1.15);
     }
   }
 }

@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
-import { Button, Menu, Modal, Form } from 'antd'
-import { AppstoreOutlined, PlusOutlined } from '@ant-design/icons'
+import { Button, Menu, Modal, Form, message } from 'antd'
+import {
+  AppstoreOutlined,
+  PlusOutlined,
+  DeleteTwoTone,
+  DeleteOutlined,
+} from '@ant-design/icons'
 
 import AddPhotosetForm from '../add-photoset-form/add-photoset-form.component'
-import { db } from '../../firebase'
+import { db, deletePhotoset } from '../../firebase'
 import { IPhotoSet } from '../../interfaces/gallery.interfaces'
 import { IMenuItem } from '../../interfaces/menu.interface'
+
+import './side-menu.styles.scss'
 
 interface IProps {
   defaultActiveDropown: string
@@ -49,6 +56,19 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
     setActiveDropowns(openKeys as string[])
   }
 
+  const onPhotosetDelete = (id: string) => {
+    Modal.confirm({
+      title: 'Ты что, сдурела?',
+      icon: <DeleteOutlined style={{ color: 'red' }} />,
+      content: 'Удалить фотосет и все фото?',
+      onOk: async () => {
+        await deletePhotoset(id)
+        message.success('Видалено')
+        fetchMenuItems()
+      },
+    })
+  }
+
   const [addAlbumFormControlInstance] = Form.useForm()
   const [addSerieFormControlInstance] = Form.useForm()
 
@@ -59,11 +79,18 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
       selectedKeys={[activePhotosetID]}
       mode="inline"
       style={{ height: '100%' }}
+      className="side-menu"
     >
       <Menu.SubMenu key="album" icon={<AppstoreOutlined />} title="Альбоми">
         {albumItems.map(({ label, routePath, id }) => {
           return (
-            <Menu.Item key={id}>
+            <Menu.Item key={id} className="side-menu-item">
+              <DeleteTwoTone
+                twoToneColor="#eb2f96"
+                style={{ fontSize: 21 }}
+                className="delete-icon"
+                onClick={() => onPhotosetDelete(id)}
+              />
               <Link to={`/editor/album${routePath}`}>{label}</Link>
             </Menu.Item>
           )
@@ -102,7 +129,13 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
       <Menu.SubMenu key="serie" icon={<AppstoreOutlined />} title="Серії">
         {serieItems.map(({ label, routePath, id }) => {
           return (
-            <Menu.Item key={id}>
+            <Menu.Item key={id} className="side-menu-item">
+              <DeleteTwoTone
+                twoToneColor="#eb2f96"
+                style={{ fontSize: 21 }}
+                className="delete-icon"
+                onClick={() => onPhotosetDelete(id)}
+              />
               <Link to={`/editor/serie${routePath}`}>{label}</Link>
             </Menu.Item>
           )

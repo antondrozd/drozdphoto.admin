@@ -2,6 +2,8 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/storage'
 
+import { IPhoto, IPhotoSet } from './interfaces/gallery.interfaces'
+
 const firebaseConfig = {
   apiKey: 'AIzaSyChdIJtbrb5nJeDTV8SQ-W1flNXrp2g89k',
   authDomain: 'drozd-photo-serverless.firebaseapp.com',
@@ -15,5 +17,26 @@ firebase.initializeApp(firebaseConfig)
 
 export const db = firebase.firestore()
 export const storage = firebase.storage()
+
+// utils
+export const deletePhotos = (photos: IPhoto[]) => {
+  photos.forEach(async (photo) => await storage.ref().child(photo.name).delete())
+}
+
+export const deletePhotoset = async (photosetID: string) => {
+  try {
+    const docRef = db.doc(`sets/${photosetID}`)
+    const docSnapshot = await docRef.get()
+
+    if (!docSnapshot.exists) throw new Error('Document does not exist')
+
+    const { photos } = docSnapshot.data() as IPhotoSet
+
+    await docRef.delete()
+    deletePhotos(photos)
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 export default firebase

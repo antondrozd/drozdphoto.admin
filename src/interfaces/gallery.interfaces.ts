@@ -46,7 +46,7 @@ export class PhotoSet implements IPhotoSet {
   }) {
     this.id = id
     this.label = label
-    this.descr = descr
+    this.descr = descr || ''
     this.routePath = `/${id}`
     this.coverImgSrc = null
     this.type = type
