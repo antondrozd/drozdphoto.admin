@@ -16,12 +16,15 @@ import { IMenuItem } from '../../interfaces/menu.interface'
 import './side-menu.styles.scss'
 
 interface IProps {
-  defaultActiveDropown: string
-  activePhotosetID: string
+  defaultActiveDropown?: string
+  activePhotosetID?: string
 }
 
 const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
-  const [activeDropowns, setActiveDropowns] = useState([defaultActiveDropown])
+  const defaultActiveDropowns = defaultActiveDropown ? [defaultActiveDropown] : []
+  const defaultSelectedItems = activePhotosetID ? [activePhotosetID] : []
+
+  const [activeDropowns, setActiveDropowns] = useState(defaultActiveDropowns)
   const [albumItems, setAlbumItems] = useState<IMenuItem[]>([])
   const [serieItems, setSerieItems] = useState<IMenuItem[]>([])
 
@@ -65,6 +68,7 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
         await deletePhotoset(id)
         message.success('Видалено')
         fetchMenuItems()
+        history.push('/editor')
       },
     })
   }
@@ -76,7 +80,7 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
     <Menu
       openKeys={activeDropowns}
       onOpenChange={onOpenChange}
-      selectedKeys={[activePhotosetID]}
+      selectedKeys={defaultSelectedItems}
       mode="inline"
       style={{ height: '100%' }}
       className="side-menu"

@@ -6,22 +6,26 @@ import GalleryEditor from '../../components/gallery-editor/gallery-editor.compon
 
 const { Sider, Content } = Layout
 
-interface IParams {
-  photosetType: string
-  id: string
+interface IRouteParams {
+  photosetType: string | undefined
+  id: string | undefined
 }
 
 const GalleryEditorPage = () => {
-  const { photosetType, id } = useParams<IParams>()
+  const { photosetType, id } = useParams<IRouteParams>()
+
+  const menuProps = {}
+
+  if (photosetType && id) {
+    Object.assign(menuProps, { defaultActiveDropown: photosetType, activePhotosetID: id })
+  }
 
   return (
     <>
       <Sider>
-        <SideMenu defaultActiveDropown={photosetType} activePhotosetID={id} />
+        <SideMenu {...menuProps} />
       </Sider>
-      <Content>
-        <GalleryEditor photosetID={id} />
-      </Content>
+      <Content>{id ? <GalleryEditor photosetID={id} /> : <></>}</Content>
     </>
   )
 }
