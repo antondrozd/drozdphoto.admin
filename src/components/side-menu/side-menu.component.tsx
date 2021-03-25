@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 import { Button, Menu, Modal, Form, message } from 'antd'
 import {
   AppstoreOutlined,
@@ -20,14 +20,20 @@ interface IProps {
   activePhotosetID?: string
 }
 
+interface IMenuItems {
+  album: IMenuItem[]
+  serie: IMenuItem[]
+}
+
 const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
   const defaultActiveDropowns = defaultActiveDropown ? [defaultActiveDropown] : []
   const defaultSelectedItems = activePhotosetID ? [activePhotosetID] : []
 
   const [activeDropowns, setActiveDropowns] = useState(defaultActiveDropowns)
-  const [albumItems, setAlbumItems] = useState<IMenuItem[]>([])
-  const [serieItems, setSerieItems] = useState<IMenuItem[]>([])
 
+  const [menuItems, setMenuItems] = useState<IMenuItems>({ album: [], serie: [] })
+
+  const location = useLocation()
   const history = useHistory()
 
   useEffect(() => {
@@ -38,9 +44,9 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
     db.collection('sets')
       .get()
       .then((snapshot) => {
-        const items = {
-          album: [] as IMenuItem[],
-          serie: [] as IMenuItem[],
+        const items: IMenuItems = {
+          album: [],
+          serie: [],
         }
 
         snapshot.docs.forEach((doc) => {
@@ -49,8 +55,7 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
           items[type].push({ routePath, label, id })
         })
 
-        setAlbumItems(items.album)
-        setSerieItems(items.serie)
+        setMenuItems(items)
       })
       .catch(console.error)
   }
@@ -59,17 +64,70 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
     setActiveDropowns(openKeys as string[])
   }
 
-  const onPhotosetDelete = (id: string) => {
+  const onPhotosetDeleteRequest = (id: string) => {
     Modal.confirm({
       title: 'Ты что, сдурела?',
       icon: <DeleteOutlined style={{ color: 'red' }} />,
       content: 'Удалить фотосет и все фото?',
-      onOk: async () => {
-        await deletePhotoset(id)
-        message.success('Видалено')
-        fetchMenuItems()
+      onOk: () => onPhotosetDeleteConfirm(id),
+    })
+  }
+
+  const onPhotosetDeleteConfirm = async (id: string) => {
+    try {
+      await deletePhotoset(id)
+      message.success('Видалено')
+      fetchMenuItems()
+      if (location.pathname.includes(id)) {
         history.push('/editor')
-      },
+      }
+    } catch (error) {
+      console.error(error)
+      message.error(error.message)
+    }
+  }
+
+  const showAddAlbumModal = () => {
+    Modal.confirm({
+      title: 'Додати альбом',
+      content: (
+        <AddPhotosetForm
+          photosetType="album"
+          formControlInstance={addAlbumFormControlInstance}
+          onFinish={({ photosetType, photosetID }) => {
+            fetchMenuItems()
+            history.push(`/editor/${photosetType}/${photosetID}`)
+          }}
+        />
+      ),
+      okText: 'Додати',
+      cancelText: 'Назад',
+      onOk: () =>
+        addAlbumFormControlInstance.validateFields().then(() => {
+          addAlbumFormControlInstance.submit()
+        }),
+    })
+  }
+
+  const showAddSerieModal = () => {
+    Modal.confirm({
+      title: 'Додати серію',
+      content: (
+        <AddPhotosetForm
+          photosetType="serie"
+          formControlInstance={addSerieFormControlInstance}
+          onFinish={({ photosetType, photosetID }) => {
+            fetchMenuItems()
+            history.push(`/editor/${photosetType}/${photosetID}`)
+          }}
+        />
+      ),
+      okText: 'Додати',
+      cancelText: 'Назад',
+      onOk: () =>
+        addSerieFormControlInstance.validateFields().then(() => {
+          addSerieFormControlInstance.submit()
+        }),
     })
   }
 
@@ -86,16 +144,18 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
       className="side-menu"
     >
       <Menu.SubMenu key="album" icon={<AppstoreOutlined />} title="Альбоми">
-        {albumItems.map(({ label, routePath, id }) => {
+        {menuItems.album.map(({ label, routePath, id }) => {
           return (
             <Menu.Item key={id} className="side-menu-item">
               <DeleteTwoTone
                 twoToneColor="#eb2f96"
                 style={{ fontSize: 21 }}
                 className="delete-icon"
-                onClick={() => onPhotosetDelete(id)}
+                onClick={() => onPhotosetDeleteRequest(id)}
               />
-              <Link to={`/editor/album${routePath}`}>{label}</Link>
+              <Link to={`/editor/album${routePath}`} title={label}>
+                {label}
+              </Link>
             </Menu.Item>
           )
         })}
@@ -103,27 +163,7 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
           <Button
             type="dashed"
             style={{ marginLeft: '-16px' }}
-            onClick={() => {
-              Modal.confirm({
-                title: 'Додати альбом',
-                content: (
-                  <AddPhotosetForm
-                    photosetType="album"
-                    formControlInstance={addAlbumFormControlInstance}
-                    onFinish={({ photosetType, photosetID }) => {
-                      fetchMenuItems()
-                      history.push(`/editor/${photosetType}/${photosetID}`)
-                    }}
-                  />
-                ),
-                okText: 'Додати',
-                cancelText: 'Назад',
-                onOk: () =>
-                  addAlbumFormControlInstance.validateFields().then(() => {
-                    addAlbumFormControlInstance.submit()
-                  }),
-              })
-            }}
+            onClick={showAddAlbumModal}
           >
             Додати альбом
             <PlusOutlined style={{ fontSize: 16, marginLeft: '10px', marginRight: 0 }} />
@@ -131,16 +171,18 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
         </Menu.Item>
       </Menu.SubMenu>
       <Menu.SubMenu key="serie" icon={<AppstoreOutlined />} title="Серії">
-        {serieItems.map(({ label, routePath, id }) => {
+        {menuItems.serie.map(({ label, routePath, id }) => {
           return (
             <Menu.Item key={id} className="side-menu-item">
               <DeleteTwoTone
                 twoToneColor="#eb2f96"
                 style={{ fontSize: 21 }}
                 className="delete-icon"
-                onClick={() => onPhotosetDelete(id)}
+                onClick={() => onPhotosetDeleteRequest(id)}
               />
-              <Link to={`/editor/serie${routePath}`}>{label}</Link>
+              <Link to={`/editor/serie${routePath}`} title={label}>
+                {label}
+              </Link>
             </Menu.Item>
           )
         })}
@@ -148,27 +190,7 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
           <Button
             type="dashed"
             style={{ marginLeft: '-16px' }}
-            onClick={() => {
-              Modal.confirm({
-                title: 'Додати серію',
-                content: (
-                  <AddPhotosetForm
-                    photosetType="serie"
-                    formControlInstance={addSerieFormControlInstance}
-                    onFinish={({ photosetType, photosetID }) => {
-                      fetchMenuItems()
-                      history.push(`/editor/${photosetType}/${photosetID}`)
-                    }}
-                  />
-                ),
-                okText: 'Додати',
-                cancelText: 'Назад',
-                onOk: () =>
-                  addSerieFormControlInstance.validateFields().then(() => {
-                    addSerieFormControlInstance.submit()
-                  }),
-              })
-            }}
+            onClick={showAddSerieModal}
           >
             Додати серію
             <PlusOutlined style={{ fontSize: 16, marginLeft: '10px', marginRight: 0 }} />

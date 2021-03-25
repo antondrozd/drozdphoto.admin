@@ -14,16 +14,10 @@ interface IRouteParams {
 const GalleryEditorPage = () => {
   const { photosetType, id } = useParams<IRouteParams>()
 
-  const menuProps = {}
-
-  if (photosetType && id) {
-    Object.assign(menuProps, { defaultActiveDropown: photosetType, activePhotosetID: id })
-  }
-
   return (
     <>
       <Sider>
-        <SideMenu {...menuProps} />
+        <SideMenu defaultActiveDropown={photosetType} activePhotosetID={id} />
       </Sider>
       <Content>{id ? <GalleryEditor photosetID={id} /> : <></>}</Content>
     </>

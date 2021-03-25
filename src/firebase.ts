@@ -24,19 +24,15 @@ export const deletePhotos = (photos: IPhoto[]) => {
 }
 
 export const deletePhotoset = async (photosetID: string) => {
-  try {
-    const docRef = db.doc(`sets/${photosetID}`)
-    const docSnapshot = await docRef.get()
+  const docRef = db.doc(`sets/${photosetID}`)
+  const docSnapshot = await docRef.get()
 
-    if (!docSnapshot.exists) throw new Error('Document does not exist')
+  if (!docSnapshot.exists) throw new Error('Document does not exist')
 
-    const { photos } = docSnapshot.data() as IPhotoSet
+  const { photos } = docSnapshot.data() as IPhotoSet
 
-    await docRef.delete()
-    deletePhotos(photos)
-  } catch (error) {
-    console.error(error)
-  }
+  await docRef.delete()
+  deletePhotos(photos)
 }
 
 export default firebase
