@@ -25,6 +25,12 @@ interface IMenuItems {
   serie: IMenuItem[]
 }
 
+const styles = {
+  addPhotosetButton: { marginLeft: '-16px' },
+  addPhotosetIcon: { fontSize: 16, marginLeft: '10px', marginRight: 0 },
+  deletePhotosetIcon: { fontSize: 21 },
+}
+
 const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
   const defaultActiveDropowns = defaultActiveDropown ? [defaultActiveDropown] : []
   const defaultSelectedItems = activePhotosetID ? [activePhotosetID] : []
@@ -64,11 +70,13 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
     setActiveDropowns(openKeys as string[])
   }
 
-  const onPhotosetDeleteRequest = (id: string) => {
+  const onPhotosetDeleteRequest = (id: string, label: string) => {
     Modal.confirm({
-      title: 'Ты что, сдурела?',
+      title: 'Ви впевнені?',
+      content: `Видалити фотосет "${label}"?`,
       icon: <DeleteOutlined style={{ color: 'red' }} />,
-      content: 'Удалить фотосет и все фото?',
+      okText: 'Видалити',
+      cancelText: 'Назад',
       onOk: () => onPhotosetDeleteConfirm(id),
     })
   }
@@ -149,9 +157,9 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
             <Menu.Item key={id} className="side-menu-item">
               <DeleteTwoTone
                 twoToneColor="#eb2f96"
-                style={{ fontSize: 21 }}
+                style={styles.deletePhotosetIcon}
                 className="delete-icon"
-                onClick={() => onPhotosetDeleteRequest(id)}
+                onClick={() => onPhotosetDeleteRequest(id, label)}
               />
               <Link to={`/editor/album${routePath}`} title={label}>
                 {label}
@@ -162,11 +170,11 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
         <Menu.Item key="add-album">
           <Button
             type="dashed"
-            style={{ marginLeft: '-16px' }}
+            style={styles.addPhotosetButton}
             onClick={showAddAlbumModal}
           >
             Додати альбом
-            <PlusOutlined style={{ fontSize: 16, marginLeft: '10px', marginRight: 0 }} />
+            <PlusOutlined style={styles.addPhotosetIcon} />
           </Button>
         </Menu.Item>
       </Menu.SubMenu>
@@ -176,9 +184,9 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
             <Menu.Item key={id} className="side-menu-item">
               <DeleteTwoTone
                 twoToneColor="#eb2f96"
-                style={{ fontSize: 21 }}
+                style={styles.deletePhotosetIcon}
                 className="delete-icon"
-                onClick={() => onPhotosetDeleteRequest(id)}
+                onClick={() => onPhotosetDeleteRequest(id, label)}
               />
               <Link to={`/editor/serie${routePath}`} title={label}>
                 {label}
@@ -189,11 +197,11 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
         <Menu.Item key="add-serie">
           <Button
             type="dashed"
-            style={{ marginLeft: '-16px' }}
+            style={styles.addPhotosetButton}
             onClick={showAddSerieModal}
           >
             Додати серію
-            <PlusOutlined style={{ fontSize: 16, marginLeft: '10px', marginRight: 0 }} />
+            <PlusOutlined style={styles.addPhotosetIcon} />
           </Button>
         </Menu.Item>
       </Menu.SubMenu>

@@ -19,11 +19,14 @@ interface IProps {
 
 const AddPhotosetForm = ({ formControlInstance, photosetType, onFinish }: IProps) => {
   const onAdd = ({ label, descr }: { label: string; descr: string }) => {
-    const photoset = new PhotoSet({ id: uid(), label, descr, type: photosetType })
+    const photoset = Object.assign(
+      {},
+      new PhotoSet({ id: uid(), label, descr, type: photosetType })
+    ) // needed because firebase don't accept custom objects
 
     db.collection('sets')
       .doc(photoset.id)
-      .set(Object.assign({}, photoset))
+      .set(photoset)
       .then(() => {
         message.success('Створено!')
         formControlInstance.resetFields()
@@ -35,7 +38,7 @@ const AddPhotosetForm = ({ formControlInstance, photosetType, onFinish }: IProps
   return (
     <Form form={formControlInstance} onFinish={onAdd}>
       <Form.Item
-        rules={[{ required: true, message: 'Введіть назву' }]}
+        rules={[{ required: true, whitespace: true, message: 'Введіть назву' }]}
         name="label"
         label="Назва"
       >

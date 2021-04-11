@@ -22,7 +22,7 @@ const Photo = ({ photo, margin, direction, top, left }: RenderImageProps) => {
   const handleRemove = () => {
     // @ts-ignore
     dispatch(removePhoto(photo))
-    message.success('Photo removed. To save shanges press "Save" button')
+    message.success('Фото видалено. Щоб зберегти зміни, натисніть "Зберегти"')
   }
 
   return (

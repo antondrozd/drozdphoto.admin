@@ -1,12 +1,7 @@
 import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Upload, Button, Spin, Modal, Empty } from 'antd'
-import {
-  PlusOutlined,
-  RedoOutlined,
-  LoadingOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons'
+import { Upload, Button, Spin, Empty } from 'antd'
+import { PlusOutlined, RedoOutlined, LoadingOutlined } from '@ant-design/icons'
 import arrayMove from 'array-move'
 import _ from 'lodash'
 
@@ -46,7 +41,7 @@ const GalleryEditor = ({ photosetID }: IProps) => {
   const uploadRequest = ({ file }: { file: File }) =>
     dispatch(uploadPhotoRequest(photosetID, file))
 
-  const onSortStart = () => document.body.classList.add('grabbing')
+  const onSortStart = () => document.body.classList.add('grabbing') // needed to enable grabbing cursor
 
   const onSortEnd = ({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
     const photosWithNewOrder = arrayMove(photos, oldIndex, newIndex)
@@ -55,7 +50,7 @@ const GalleryEditor = ({ photosetID }: IProps) => {
       dispatch(reorderPhotos(photosWithNewOrder))
     }
 
-    document.body.classList.remove('grabbing')
+    document.body.classList.remove('grabbing') // needed to disable grabbing cursor
   }
 
   const onRefresh = () => dispatch(fetchPhotosRequest(photosetID))
