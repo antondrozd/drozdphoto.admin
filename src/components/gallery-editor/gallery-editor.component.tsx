@@ -39,12 +39,9 @@ const GalleryEditor = ({ photosetID }: IProps) => {
 
   const dispatch = useDispatch()
 
-  useEffect(
-    () => {
-      dispatch(fetchPhotosRequest(photosetID))
-    },
-    [dispatch, photosetID]
-  )
+  useEffect(() => {
+    dispatch(fetchPhotosRequest(photosetID))
+  }, [dispatch, photosetID])
 
   const uploadRequest = ({ file }: { file: File }) =>
     dispatch(uploadPhotoRequest(photosetID, file))
@@ -65,16 +62,7 @@ const GalleryEditor = ({ photosetID }: IProps) => {
 
   const onSave = () => dispatch(saveEditedRequest(photosetID, photos))
 
-  const onClear = () => {
-    Modal.confirm({
-      title: 'Ты что, сдурела?',
-      icon: <DeleteOutlined style={{ color: 'red' }} />,
-      content: 'Удалить все фото?',
-      onOk() {
-        dispatch(clearGallery())
-      },
-    })
-  }
+  const onClear = () => dispatch(clearGallery())
 
   return (
     <>
