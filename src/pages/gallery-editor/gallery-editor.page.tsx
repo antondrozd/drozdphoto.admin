@@ -7,8 +7,8 @@ import GalleryEditor from '../../components/gallery-editor/gallery-editor.compon
 const { Sider, Content } = Layout
 
 interface IRouteParams {
-  photosetType: string | undefined
-  id: string | undefined
+  photosetType?: string
+  id?: string
 }
 
 const GalleryEditorPage = () => {
