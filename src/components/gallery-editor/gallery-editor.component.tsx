@@ -10,10 +10,11 @@ import {
   selectPhotos,
   selectIsEdited,
   selectIsLoading,
+  selectCoverImgSrc,
 } from '../../redux/gallery/gallery.selectors'
 import {
   clearGallery,
-  fetchPhotosRequest,
+  fetchPhotosetDataRequest,
   reorderPhotos,
   saveEditedRequest,
   uploadPhotoRequest,
@@ -29,21 +30,28 @@ interface IProps {
 
 const GalleryEditor = ({ photosetID }: IProps) => {
   const photos = useSelector(selectPhotos)
+  const coverImgSrc = useSelector(selectCoverImgSrc)
   const isEdited = useSelector(selectIsEdited)
   const isLoading = useSelector(selectIsLoading)
 
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(fetchPhotosRequest(photosetID))
+    dispatch(fetchPhotosetDataRequest(photosetID))
   }, [dispatch, photosetID])
 
   const uploadRequest = ({ file }: { file: File }) =>
     dispatch(uploadPhotoRequest(photosetID, file))
 
-  const onSortStart = () => document.body.classList.add('grabbing') // needed to enable grabbing cursor
+  const handleSortStart = () => document.body.classList.add('grabbing') // needed to enable grabbing cursor
 
-  const onSortEnd = ({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
+  const handleSortEnd = ({
+    oldIndex,
+    newIndex,
+  }: {
+    oldIndex: number
+    newIndex: number
+  }) => {
     const photosWithNewOrder = arrayMove(photos, oldIndex, newIndex)
 
     if (!_.isEqual(photosWithNewOrder, photos)) {
@@ -53,20 +61,21 @@ const GalleryEditor = ({ photosetID }: IProps) => {
     document.body.classList.remove('grabbing') // needed to disable grabbing cursor
   }
 
-  const onRefresh = () => dispatch(fetchPhotosRequest(photosetID))
+  const handleRefresh = () => dispatch(fetchPhotosetDataRequest(photosetID))
 
-  const onSave = () => dispatch(saveEditedRequest(photosetID, photos))
+  const handleSave = () =>
+    dispatch(saveEditedRequest(photosetID, { photos, coverImgSrc }))
 
-  const onClear = () => dispatch(clearGallery())
+  const handleClear = () => dispatch(clearGallery())
 
   return (
-    <>
+    <div className="gallery-editor">
       <Spin spinning={isLoading} indicator={<LoadingOutlined />}>
         {!_.isEmpty(photos) ? (
           <SortableGallery
             photos={photos}
-            onSortStart={onSortStart}
-            onSortEnd={onSortEnd}
+            onSortStart={handleSortStart}
+            onSortEnd={handleSortEnd}
             distance={1}
             axis={'xy'}
           />
@@ -88,17 +97,33 @@ const GalleryEditor = ({ photosetID }: IProps) => {
         <PlusOutlined />
       </Dragger>
       <div className="controls">
-        <Button shape="round" disabled={!isEdited} onClick={onSave}>
-          Зберегти
-        </Button>
-        <Button shape="circle" disabled={!isEdited} onClick={onRefresh}>
-          <RedoOutlined />
-        </Button>
-        <Button danger shape="round" disabled={_.isEmpty(photos)} onClick={onClear}>
+        <Button
+          className="control-btn"
+          danger
+          shape="round"
+          disabled={_.isEmpty(photos)}
+          onClick={handleClear}
+        >
           Очистити галерею
         </Button>
+        <Button
+          className="control-btn"
+          shape="circle"
+          disabled={!isEdited}
+          onClick={handleRefresh}
+        >
+          <RedoOutlined />
+        </Button>
+        <Button
+          className="control-btn"
+          shape="round"
+          disabled={!isEdited}
+          onClick={handleSave}
+        >
+          Зберегти
+        </Button>
       </div>
-    </>
+    </div>
   )
 }
 

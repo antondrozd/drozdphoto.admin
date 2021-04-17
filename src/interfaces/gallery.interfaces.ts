@@ -1,8 +1,8 @@
 import { PhotosetType, TypedAction } from './common.interfaces'
 import {
-  FETCH_PHOTOS_REQUEST,
-  FETCH_PHOTOS_FAILURE,
-  FETCH_PHOTOS_SUCCESS,
+  FETCH_PHOTOSET_DATA_REQUEST,
+  FETCH_PHOTOSET_DATA_FAILURE,
+  FETCH_PHOTOSET_DATA_SUCCESS,
   REMOVE_PHOTO,
   REORDER_PHOTOS,
   SAVE_EDITED_FAILURE,
@@ -12,6 +12,7 @@ import {
   UPLOAD_PHOTO_REQUEST,
   SAVE_EDITED_REQUEST,
   CLEAR_GALLERY,
+  SELECT_COVER,
 } from '../redux/gallery/gallery.actions'
 
 export interface IPhotoSet {
@@ -62,16 +63,19 @@ export interface IPhoto {
   height: number
 }
 
-export interface IActionFetchPhotosRequest
-  extends TypedAction<typeof FETCH_PHOTOS_REQUEST> {}
+export type IPhotosetGalleryData = Pick<IPhotoSet, 'coverImgSrc' | 'photos'>
+export type IPhotosetMetaData = Pick<IPhotoSet, 'label' | 'descr'>
 
-export interface IActionFetchPhotoSuccess
-  extends TypedAction<typeof FETCH_PHOTOS_SUCCESS> {
-  payload: IPhoto[]
+export interface IActionFetchPhotosetDataRequest
+  extends TypedAction<typeof FETCH_PHOTOSET_DATA_REQUEST> {}
+
+export interface IActionFetchPhotosetDataSuccess
+  extends TypedAction<typeof FETCH_PHOTOSET_DATA_SUCCESS> {
+  payload: IPhotosetGalleryData
 }
 
-export interface IActionFetchPhotosFailure
-  extends TypedAction<typeof FETCH_PHOTOS_FAILURE> {
+export interface IActionFetchPhotosetDataFailure
+  extends TypedAction<typeof FETCH_PHOTOSET_DATA_FAILURE> {
   payload: any //error
 }
 
@@ -84,6 +88,10 @@ export interface IActionRemovePhoto extends TypedAction<typeof REMOVE_PHOTO> {
 }
 
 export interface IActionClearGallery extends TypedAction<typeof CLEAR_GALLERY> {}
+
+export interface IActionSelectCover extends TypedAction<typeof SELECT_COVER> {
+  payload: string | null
+}
 
 export interface IActionSaveEditedRequest
   extends TypedAction<typeof SAVE_EDITED_REQUEST> {}
@@ -110,12 +118,13 @@ export interface IActionUploadPhotoFailure
 }
 
 export type IGalleryActions =
-  | IActionFetchPhotosRequest
-  | IActionFetchPhotoSuccess
-  | IActionFetchPhotosFailure
+  | IActionFetchPhotosetDataRequest
+  | IActionFetchPhotosetDataSuccess
+  | IActionFetchPhotosetDataFailure
   | IActionReorderPhotos
   | IActionRemovePhoto
   | IActionClearGallery
+  | IActionSelectCover
   | IActionSaveEditedRequest
   | IActionSaveEditedSuccess
   | IActionSaveEditedFailure

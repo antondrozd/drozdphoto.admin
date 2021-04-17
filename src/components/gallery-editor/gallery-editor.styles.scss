@@ -5,3 +5,17 @@
 .grabbing * {
   cursor: grabbing;
 }
+
+.gallery-editor {
+  padding-bottom: 25px;
+
+  .controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 25px;
+
+    .control-btn {
+      margin-left: 7px;
+    }
+  }
+}

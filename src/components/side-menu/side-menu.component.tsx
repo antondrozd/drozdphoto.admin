@@ -25,12 +25,6 @@ interface IMenuItems {
   serie: IMenuItem[]
 }
 
-const styles = {
-  addPhotosetButton: { marginLeft: '-16px' },
-  addPhotosetIcon: { fontSize: 16, marginLeft: '10px', marginRight: 0 },
-  deletePhotosetIcon: { fontSize: 21 },
-}
-
 const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
   const defaultActiveDropowns = defaultActiveDropown ? [defaultActiveDropown] : []
   const defaultSelectedItems = activePhotosetID ? [activePhotosetID] : []
@@ -157,7 +151,6 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
             <Menu.Item key={id} className="side-menu-item">
               <DeleteTwoTone
                 twoToneColor="#eb2f96"
-                style={styles.deletePhotosetIcon}
                 className="delete-icon"
                 onClick={() => onPhotosetDeleteRequest(id, label)}
               />
@@ -168,13 +161,9 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
           )
         })}
         <Menu.Item key="add-album">
-          <Button
-            type="dashed"
-            style={styles.addPhotosetButton}
-            onClick={showAddAlbumModal}
-          >
+          <Button type="dashed" className="add-photoset-btn" onClick={showAddAlbumModal}>
             Додати альбом
-            <PlusOutlined style={styles.addPhotosetIcon} />
+            <PlusOutlined className="add-photoset-icon" />
           </Button>
         </Menu.Item>
       </Menu.SubMenu>
@@ -184,7 +173,6 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
             <Menu.Item key={id} className="side-menu-item">
               <DeleteTwoTone
                 twoToneColor="#eb2f96"
-                style={styles.deletePhotosetIcon}
                 className="delete-icon"
                 onClick={() => onPhotosetDeleteRequest(id, label)}
               />
@@ -195,13 +183,9 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
           )
         })}
         <Menu.Item key="add-serie">
-          <Button
-            type="dashed"
-            style={styles.addPhotosetButton}
-            onClick={showAddSerieModal}
-          >
+          <Button type="dashed" className="add-photoset-btn" onClick={showAddSerieModal}>
             Додати серію
-            <PlusOutlined style={styles.addPhotosetIcon} />
+            <PlusOutlined className="add-photoset-icon" />
           </Button>
         </Menu.Item>
       </Menu.SubMenu>

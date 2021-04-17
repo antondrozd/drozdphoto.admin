@@ -1,18 +1,23 @@
 import React, { CSSProperties } from 'react'
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { message } from 'antd'
-import { DeleteTwoTone } from '@ant-design/icons'
+import { DeleteTwoTone, CrownTwoTone } from '@ant-design/icons'
 import { RenderImageProps } from 'react-photo-gallery'
 
-import { removePhoto } from '../../redux/gallery/gallery.actions'
+import { removePhoto, selectCover } from '../../redux/gallery/gallery.actions'
+import { selectCoverImgSrc } from '../../redux/gallery/gallery.selectors'
+import { IPhoto } from '../../interfaces/gallery.interfaces'
 
 import './photo.styles.scss'
 
 const Photo = ({ photo, margin, direction, top, left }: RenderImageProps) => {
   const dispatch = useDispatch()
 
-  const imgStyle: CSSProperties = { margin: margin }
+  const coverImgSrc = useSelector(selectCoverImgSrc)
+  const isSelectedAsCover = coverImgSrc === photo.src
 
+  // requreid by reat-sortable-gallery
+  const imgStyle: CSSProperties = { margin: margin }
   if (direction === 'column') {
     imgStyle.position = 'absolute'
     imgStyle.left = left
@@ -25,13 +30,24 @@ const Photo = ({ photo, margin, direction, top, left }: RenderImageProps) => {
     message.success('Фото видалено. Щоб зберегти зміни, натисніть "Зберегти"')
   }
 
+  const handleCoverSelect = (photo: IPhoto) => {
+    if (!isSelectedAsCover) {
+      dispatch(selectCover(photo.src))
+    }
+  }
+
   return (
-    <div className="photo">
+    <div className={`photo ${isSelectedAsCover && 'cover'}`}>
       <DeleteTwoTone
         twoToneColor="#eb2f96"
-        style={{ fontSize: 26 }}
         className="delete-icon"
         onClick={handleRemove}
+      />
+      <CrownTwoTone
+        twoToneColor="#ffd700"
+        className="select-cover-icon"
+        // @ts-ignore
+        onClick={() => handleCoverSelect(photo)}
       />
       {/* @ts-ignore */}
       <img style={imgStyle} {...photo} alt="img" className="photo-img" />
