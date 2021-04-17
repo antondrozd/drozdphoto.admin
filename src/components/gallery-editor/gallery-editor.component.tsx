@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Upload, Button, Spin, Empty } from 'antd'
+import { Upload, Button, Spin, Empty, message } from 'antd'
 import { PlusOutlined, RedoOutlined, LoadingOutlined } from '@ant-design/icons'
+import { RcFile } from 'antd/lib/upload'
 import arrayMove from 'array-move'
 import _ from 'lodash'
 
@@ -68,9 +69,23 @@ const GalleryEditor = ({ photosetID }: IProps) => {
 
   const handleClear = () => dispatch(clearGallery())
 
+  const checkFileSize = (file: RcFile, _: RcFile[]) => {
+    const isSmallerThan2MB = file.size / 1024 / 1024 < 2
+
+    if (!isSmallerThan2MB) {
+      message.error('Фото повинно бути не більшим, ніж 2MB!')
+    }
+
+    return isSmallerThan2MB
+  }
+
   return (
     <div className="gallery-editor">
-      <Spin spinning={isLoading} indicator={<LoadingOutlined />}>
+      <Spin
+        spinning={isLoading}
+        indicator={<LoadingOutlined />}
+        wrapperClassName="content"
+      >
         {!_.isEmpty(photos) ? (
           <SortableGallery
             photos={photos}
@@ -90,6 +105,7 @@ const GalleryEditor = ({ photosetID }: IProps) => {
         name="file"
         multiple={true}
         customRequest={uploadRequest}
+        beforeUpload={checkFileSize}
         showUploadList={false}
         accept="image/png, image/jpeg"
         height={80}

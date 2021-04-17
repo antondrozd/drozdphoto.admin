@@ -9,6 +9,10 @@
 .gallery-editor {
   padding-bottom: 25px;
 
+  .content {
+    min-height: 25vh;
+  }
+
   .controls {
     display: flex;
     justify-content: flex-end;
