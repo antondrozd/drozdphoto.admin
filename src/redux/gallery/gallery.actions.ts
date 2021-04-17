@@ -23,6 +23,7 @@ export const REMOVE_PHOTO = 'REMOVE_PHOTO'
 export const REORDER_PHOTOS = 'REORDER_PHOTOS'
 export const CLEAR_GALLERY = 'CLEAR_GALLERY'
 export const SET_COVER = 'SET_COVER'
+
 export const SAVE_EDITED_REQUEST = 'SAVE_EDITED_REQUEST'
 export const SAVE_EDITED_SUCCESS = 'SAVE_EDITED_SUCCESS'
 export const SAVE_EDITED_FAILURE = 'SAVE_EDITED_FAILURE'
@@ -43,12 +44,9 @@ export const fetchPhotosetDataRequest = (
   }
 }
 
-const fetchPhotosetDataSuccess = ({
-  photos,
-  coverImgSrc,
-}: IPhotosetGalleryData): IGalleryActions => ({
+const fetchPhotosetDataSuccess = (data: IPhotosetGalleryData): IGalleryActions => ({
   type: FETCH_PHOTOSET_DATA_SUCCESS,
-  payload: { photos, coverImgSrc },
+  payload: data,
 })
 
 const fetchPhotosetDataFailure = (error: any): IGalleryActions => ({

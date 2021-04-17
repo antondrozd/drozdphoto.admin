@@ -16,7 +16,7 @@ const Photo = ({ photo, margin, direction, top, left }: RenderImageProps) => {
   const coverImgSrc = useSelector(selectCoverImgSrc)
   const isSelectedAsCover = coverImgSrc === photo.src
 
-  // required by reat-sortable-gallery
+  // required by react-sortable-gallery
   const imgStyle: CSSProperties = { margin: margin }
   if (direction === 'column') {
     imgStyle.position = 'absolute'

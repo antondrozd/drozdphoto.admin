@@ -4,15 +4,16 @@ import { Layout } from 'antd'
 import GalleryEditorPage from './pages/gallery-editor/gallery-editor.page'
 
 import logo from './assets/logo.png'
+import './app.styles.scss'
 
 const { Header } = Layout
 
 const App = () => {
   return (
     <Layout>
-      <Header style={{ backgroundColor: '#fff' }}>
+      <Header className="header">
         <Link to="/editor">
-          <img src={logo} alt="logo" style={{ height: '40px' }} />
+          <img src={logo} alt="logo" className="logo" />
         </Link>
       </Header>
       <Layout>
