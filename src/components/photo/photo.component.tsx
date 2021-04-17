@@ -4,7 +4,7 @@ import { message } from 'antd'
 import { DeleteTwoTone, CrownTwoTone } from '@ant-design/icons'
 import { RenderImageProps } from 'react-photo-gallery'
 
-import { removePhoto, selectCover } from '../../redux/gallery/gallery.actions'
+import { removePhoto, setCover } from '../../redux/gallery/gallery.actions'
 import { selectCoverImgSrc } from '../../redux/gallery/gallery.selectors'
 import { IPhoto } from '../../interfaces/gallery.interfaces'
 
@@ -28,11 +28,13 @@ const Photo = ({ photo, margin, direction, top, left }: RenderImageProps) => {
     // @ts-ignore
     dispatch(removePhoto(photo))
     message.success('Фото видалено. Щоб зберегти зміни, натисніть "Зберегти"')
+
+    if (photo.src === coverImgSrc) dispatch(setCover(null))
   }
 
   const handleCoverSelect = (photo: IPhoto) => {
     if (!isSelectedAsCover) {
-      dispatch(selectCover(photo.src))
+      dispatch(setCover(photo.src))
     }
   }
 

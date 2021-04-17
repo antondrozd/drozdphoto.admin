@@ -12,7 +12,7 @@ import {
   UPLOAD_PHOTO_REQUEST,
   SAVE_EDITED_REQUEST,
   CLEAR_GALLERY,
-  SELECT_COVER,
+  SET_COVER,
 } from '../redux/gallery/gallery.actions'
 
 export interface IPhotoSet {
@@ -89,7 +89,7 @@ export interface IActionRemovePhoto extends TypedAction<typeof REMOVE_PHOTO> {
 
 export interface IActionClearGallery extends TypedAction<typeof CLEAR_GALLERY> {}
 
-export interface IActionSelectCover extends TypedAction<typeof SELECT_COVER> {
+export interface IActionSelectCover extends TypedAction<typeof SET_COVER> {
   payload: string | null
 }
 

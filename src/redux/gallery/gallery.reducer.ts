@@ -10,7 +10,7 @@ import {
   FETCH_PHOTOSET_DATA_REQUEST,
   UPLOAD_PHOTO_REQUEST,
   CLEAR_GALLERY,
-  SELECT_COVER,
+  SET_COVER,
 } from './gallery.actions'
 import { IGalleryActions, IPhoto } from '../../interfaces/gallery.interfaces'
 
@@ -83,7 +83,7 @@ const galleryReducer = (state = initialState, action: IGalleryActions): IState =
         editing: { ...state.editing, status: true },
         photos: action.payload,
       }
-    case SELECT_COVER:
+    case SET_COVER:
       return {
         ...state,
         editing: { ...state.editing, status: true },

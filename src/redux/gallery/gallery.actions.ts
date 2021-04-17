@@ -22,7 +22,7 @@ export const UPLOAD_PHOTO_FAILURE = 'UPLOAD_PHOTO_FAILURE'
 export const REMOVE_PHOTO = 'REMOVE_PHOTO'
 export const REORDER_PHOTOS = 'REORDER_PHOTOS'
 export const CLEAR_GALLERY = 'CLEAR_GALLERY'
-export const SELECT_COVER = 'SELECT_COVER'
+export const SET_COVER = 'SET_COVER'
 export const SAVE_EDITED_REQUEST = 'SAVE_EDITED_REQUEST'
 export const SAVE_EDITED_SUCCESS = 'SAVE_EDITED_SUCCESS'
 export const SAVE_EDITED_FAILURE = 'SAVE_EDITED_FAILURE'
@@ -70,8 +70,8 @@ export const clearGallery = (): IGalleryActions => ({
   type: CLEAR_GALLERY,
 })
 
-export const selectCover = (coverImgSrc: string): IGalleryActions => ({
-  type: SELECT_COVER,
+export const setCover = (coverImgSrc: string | null): IGalleryActions => ({
+  type: SET_COVER,
   payload: coverImgSrc,
 })
 
