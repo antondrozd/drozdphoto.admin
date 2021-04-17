@@ -73,7 +73,9 @@ const GalleryEditor = ({ photosetID }: IProps) => {
     const isSmallerThan2MB = file.size / 1024 / 1024 < 2
 
     if (!isSmallerThan2MB) {
-      message.error('Фото повинно бути не більшим, ніж 2MB!')
+      message.error(
+        `Не вдалося завантажити ${file.name}. Фото повинно бути не більшим, ніж 2MB!`
+      )
     }
 
     return isSmallerThan2MB
