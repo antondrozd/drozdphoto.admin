@@ -16,7 +16,7 @@ const Photo = ({ photo, margin, direction, top, left }: RenderImageProps) => {
   const coverImgSrc = useSelector(selectCoverImgSrc)
   const isSelectedAsCover = coverImgSrc === photo.src
 
-  // requreid by reat-sortable-gallery
+  // required by reat-sortable-gallery
   const imgStyle: CSSProperties = { margin: margin }
   if (direction === 'column') {
     imgStyle.position = 'absolute'
