@@ -76,7 +76,7 @@ export interface IActionFetchPhotosetDataSuccess
 
 export interface IActionFetchPhotosetDataFailure
   extends TypedAction<typeof FETCH_PHOTOSET_DATA_FAILURE> {
-  payload: any //error
+  payload: Error
 }
 
 export interface IActionReorderPhotos extends TypedAction<typeof REORDER_PHOTOS> {
@@ -101,7 +101,7 @@ export interface IActionSaveEditedSuccess
 
 export interface IActionSaveEditedFailure
   extends TypedAction<typeof SAVE_EDITED_FAILURE> {
-  payload: any //error
+  payload: Error
 }
 
 export interface IActionUploadPhotoRequest
@@ -114,7 +114,7 @@ export interface IActionUploadPhotoSuccess
 
 export interface IActionUploadPhotoFailure
   extends TypedAction<typeof UPLOAD_PHOTO_FAILURE> {
-  payload: any //error
+  payload: Error
 }
 
 export type IGalleryActions =

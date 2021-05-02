@@ -18,7 +18,12 @@ const App = () => {
       </Header>
       <Layout>
         <Switch>
-          <Route path="/editor/:photosetType?/:id?" component={GalleryEditorPage} />
+          <Route
+            exact
+            path="/editor/:photosetType(album|serie)?/:id?"
+            component={GalleryEditorPage}
+          />
+          <Route path="*" render={() => <>404</>}></Route>
         </Switch>
       </Layout>
     </Layout>

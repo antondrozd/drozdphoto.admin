@@ -35,12 +35,18 @@ export const fetchPhotosetDataRequest = (
 
   try {
     const docSnapshot = await db.doc(`sets/${photosetID}`).get()
+    if (!docSnapshot.exists) {
+      const error = new Error('Document does not exist in firestore')
+      error.name = 'photoset not found'
+
+      throw error
+    }
 
     const { photos, coverImgSrc } = docSnapshot.data() as IPhotoSet
 
     dispatch(fetchPhotosetDataSuccess({ photos, coverImgSrc }))
   } catch (error) {
-    fetchPhotosetDataFailure(error)
+    dispatch(fetchPhotosetDataFailure(error))
   }
 }
 

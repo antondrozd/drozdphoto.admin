@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useHistory } from 'react-router-dom'
 import { Layout } from 'antd'
 
 import SideMenu from '../../components/side-menu/side-menu.component'
@@ -13,13 +13,18 @@ interface IRouteParams {
 
 const GalleryEditorPage = () => {
   const { photosetType, id } = useParams<IRouteParams>()
+  const history = useHistory()
+
+  if ((id && !photosetType) || (!id && photosetType)) {
+    history.push('/editor')
+  }
 
   return (
     <>
       <Sider>
         <SideMenu defaultActiveDropown={photosetType} activePhotosetID={id} />
       </Sider>
-      <Content>{id ? <GalleryEditor photosetID={id} /> : <></>}</Content>
+      <Content>{id ? <GalleryEditor photosetID={id} /> : <>Оберіть фотосет</>}</Content>
     </>
   )
 }

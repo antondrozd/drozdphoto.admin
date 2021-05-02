@@ -12,6 +12,7 @@ import {
   selectIsEdited,
   selectIsLoading,
   selectCoverImgSrc,
+  selectIsPresent,
 } from '../../redux/gallery/gallery.selectors'
 import {
   clearGallery,
@@ -34,6 +35,7 @@ const GalleryEditor = ({ photosetID }: IProps) => {
   const coverImgSrc = useSelector(selectCoverImgSrc)
   const isEdited = useSelector(selectIsEdited)
   const isLoading = useSelector(selectIsLoading)
+  const isPhotosetPresent = useSelector(selectIsPresent)
 
   const dispatch = useDispatch()
 
@@ -83,64 +85,70 @@ const GalleryEditor = ({ photosetID }: IProps) => {
 
   return (
     <div className="gallery-editor">
-      <Spin
-        spinning={isLoading}
-        indicator={<LoadingOutlined />}
-        wrapperClassName="content"
-      >
-        {!_.isEmpty(photos) ? (
-          <SortableGallery
-            photos={photos}
-            onSortStart={handleSortStart}
-            onSortEnd={handleSortEnd}
-            distance={1}
-            axis={'xy'}
-          />
-        ) : (
-          !isLoading && (
-            <Empty description="Немає фото" style={{ padding: '10px 20px' }} />
-          )
-        )}
-      </Spin>
+      {isPhotosetPresent ? (
+        <>
+          <Spin
+            spinning={isLoading}
+            indicator={<LoadingOutlined />}
+            wrapperClassName="content"
+          >
+            {!_.isEmpty(photos) ? (
+              <SortableGallery
+                photos={photos}
+                onSortStart={handleSortStart}
+                onSortEnd={handleSortEnd}
+                distance={1}
+                axis={'xy'}
+              />
+            ) : (
+              !isLoading && (
+                <Empty description="Немає фото" style={{ padding: '10px 20px' }} />
+              )
+            )}
+          </Spin>
 
-      <Dragger
-        name="file"
-        multiple={true}
-        customRequest={uploadRequest}
-        beforeUpload={checkFileSize}
-        showUploadList={false}
-        accept="image/png, image/jpeg"
-        height={80}
-      >
-        <PlusOutlined />
-      </Dragger>
-      <div className="controls">
-        <Button
-          className="control-btn"
-          danger
-          shape="round"
-          disabled={_.isEmpty(photos)}
-          onClick={handleClear}
-        >
-          Очистити галерею
-        </Button>
-        <Button
-          className="control-btn"
-          shape="circle"
-          disabled={!isEdited}
-          onClick={handleRefresh}
-        >
-          <RedoOutlined />
-        </Button>
-        <Button
-          className="control-btn"
-          shape="round"
-          disabled={!isEdited}
-          onClick={handleSave}
-        >
-          Зберегти
-        </Button>
-      </div>
+          <Dragger
+            name="file"
+            multiple={true}
+            customRequest={uploadRequest}
+            beforeUpload={checkFileSize}
+            showUploadList={false}
+            accept="image/png, image/jpeg"
+            height={80}
+          >
+            <PlusOutlined />
+          </Dragger>
+          <div className="controls">
+            <Button
+              className="control-btn"
+              danger
+              shape="round"
+              disabled={_.isEmpty(photos)}
+              onClick={handleClear}
+            >
+              Очистити галерею
+            </Button>
+            <Button
+              className="control-btn"
+              shape="circle"
+              disabled={!isEdited}
+              onClick={handleRefresh}
+            >
+              <RedoOutlined />
+            </Button>
+            <Button
+              className="control-btn"
+              shape="round"
+              disabled={!isEdited}
+              onClick={handleSave}
+            >
+              Зберегти
+            </Button>
+          </div>
+        </>
+      ) : (
+        <>Фотосет не знайдено</>
+      )}
     </div>
   )
 }

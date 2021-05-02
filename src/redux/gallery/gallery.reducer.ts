@@ -12,9 +12,10 @@ import {
   CLEAR_GALLERY,
   SET_COVER,
 } from './gallery.actions'
+import { handleGalleryErrors } from './gallery.utils'
 import { IGalleryActions, IPhoto } from '../../interfaces/gallery.interfaces'
 
-interface IState {
+export interface IState {
   photos: IPhoto[]
   coverImgSrc: string | null
   editing: {
@@ -22,7 +23,8 @@ interface IState {
     photosToDelete: IPhoto[]
   }
   isLoading: boolean
-  error: any
+  isPresent: boolean
+  error: Error | null
 }
 
 const initialState: IState = {
@@ -33,6 +35,7 @@ const initialState: IState = {
     photosToDelete: [],
   },
   isLoading: false,
+  isPresent: true,
   error: null,
 }
 
@@ -47,16 +50,21 @@ const galleryReducer = (state = initialState, action: IGalleryActions): IState =
         coverImgSrc: action.payload.coverImgSrc,
         editing: { ...state.editing, photosToDelete: [], status: false },
         isLoading: false,
+        isPresent: true,
         error: null,
       }
     case UPLOAD_PHOTO_REQUEST:
       return { ...state, isLoading: true }
     case UPLOAD_PHOTO_SUCCESS:
-      return { ...state, photos: [...state.photos, action.payload], isLoading: false }
+      return {
+        ...state,
+        photos: [...state.photos, action.payload],
+        isLoading: false,
+      }
     case FETCH_PHOTOSET_DATA_FAILURE:
     case SAVE_EDITED_FAILURE:
     case UPLOAD_PHOTO_FAILURE:
-      return { ...state, error: action.payload }
+      return handleGalleryErrors(action.payload, state)
     case REMOVE_PHOTO:
       return {
         ...state,
