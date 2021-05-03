@@ -58,7 +58,11 @@ export class PhotoSet implements IPhotoSet {
 export interface IPhoto {
   id: string
   src: string
+  thumbSrc: string
+  placeholderScr: string
   name: string
+  thumbName: string
+  placeholderName: string
   width: number
   height: number
 }

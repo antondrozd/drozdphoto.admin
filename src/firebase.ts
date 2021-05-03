@@ -20,7 +20,11 @@ export const storage = firebase.storage()
 
 // utils
 export const deletePhotos = (photos: IPhoto[]) => {
-  photos.forEach(async (photo) => await storage.ref().child(photo.name).delete())
+  photos.forEach(async (photo) => {
+    await storage.ref().child(photo.name).delete()
+    await storage.ref().child(photo.thumbName).delete()
+    await storage.ref().child(photo.placeholderName).delete()
+  })
 }
 
 export const deletePhotoset = async (photosetID: string) => {

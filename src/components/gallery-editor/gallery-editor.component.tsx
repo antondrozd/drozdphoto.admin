@@ -72,15 +72,16 @@ const GalleryEditor = ({ photosetID }: IProps) => {
   const handleClear = () => dispatch(clearGallery())
 
   const checkFileSize = (file: RcFile, _: RcFile[]) => {
-    const isSmallerThan2MB = file.size / 1024 / 1024 < 2
+    const maxSizeMB = 20
+    const isValid = file.size / 1024 / 1024 < maxSizeMB
 
-    if (!isSmallerThan2MB) {
+    if (!isValid) {
       message.error(
-        `Не вдалося завантажити ${file.name}. Фото повинно бути не більшим, ніж 2MB!`
+        `Не вдалося завантажити ${file.name}. Фото повинно бути не більшим, ніж ${maxSizeMB}MB!`
       )
     }
 
-    return isSmallerThan2MB
+    return isValid
   }
 
   return (

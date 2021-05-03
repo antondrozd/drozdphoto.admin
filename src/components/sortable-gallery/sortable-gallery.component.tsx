@@ -12,6 +12,7 @@ const SortablePhoto = SortableElement((props: RenderImageProps<IPhoto>) => (
 const SortableGallery = SortableContainer(({ photos }: { photos: IPhoto[] }) => (
   <Gallery
     photos={photos}
+    margin={3}
     //@ts-ignore
     renderImage={(props: RenderImageProps<IPhoto>) => <SortablePhoto {...props} />}
   />

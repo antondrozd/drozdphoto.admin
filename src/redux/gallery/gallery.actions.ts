@@ -3,7 +3,12 @@ import { uid } from 'uid'
 import { ThunkAction } from 'redux-thunk'
 
 import firebase, { db, storage, deletePhotos } from '../../firebase'
-import { getAspectRatioFromImageFile } from '../../utils'
+import {
+  compressPhoto,
+  createThumbnail,
+  createPlaceholder,
+  getAspectRatioFromImageFile,
+} from '../../utils'
 import {
   IPhoto,
   IGalleryActions,
@@ -118,25 +123,50 @@ export const uploadPhotoRequest = (
   dispatch({ type: UPLOAD_PHOTO_REQUEST })
 
   try {
-    const [fileName, fileExt] = file.name.split('.')
+    const [originFileName, fileExt] = file.name.split('.')
     const id = uid()
+    const photoName = `${originFileName}-${id}.${fileExt}`
+    const thumbName = `${originFileName}-${id}-thumb.${fileExt}`
+    const placeholderName = `${originFileName}-${id}-placeholder.${fileExt}`
 
-    const renamedFile = new File([file], `${fileName}-${id}.${fileExt}`, {
-      type: file.type,
+    const compressedPhoto = await compressPhoto(file)
+    const thumbnail = await createThumbnail(compressedPhoto)
+    const placeholder = await createPlaceholder(thumbnail)
+
+    const photoToUpload = new File([compressedPhoto], photoName, {
+      type: compressedPhoto.type,
+    })
+    const thumbnailToUpload = new File([thumbnail], thumbName, {
+      type: compressedPhoto.type,
+    })
+    const placeholderToUpload = new File([placeholder], placeholderName, {
+      type: compressedPhoto.type,
     })
 
-    const fileRef = storage.ref().child(`${renamedFile.name}`)
-    const snapshot = await fileRef.put(renamedFile)
+    const photoRef = storage.ref().child(photoName)
+    const thumbnailRef = storage.ref().child(thumbName)
+    const placeholderRef = storage.ref().child(placeholderName)
 
-    const downloadURL = await snapshot.ref.getDownloadURL()
-    const { width, height } = await getAspectRatioFromImageFile(renamedFile)
+    const photoSnapshot = await photoRef.put(photoToUpload)
+    const thumbnailSnapshot = await thumbnailRef.put(thumbnailToUpload)
+    const placeholderSnapshot = await placeholderRef.put(placeholderToUpload)
 
-    const photo = {
+    const photoDownloadURL = await photoSnapshot.ref.getDownloadURL()
+    const thumbnailDownloadURL = await thumbnailSnapshot.ref.getDownloadURL()
+    const placeholderDownloadURL = await placeholderSnapshot.ref.getDownloadURL()
+
+    const { width, height } = await getAspectRatioFromImageFile(photoToUpload)
+
+    const photo: IPhoto = {
       id,
-      src: downloadURL,
+      src: photoDownloadURL,
+      thumbSrc: thumbnailDownloadURL,
+      placeholderScr: placeholderDownloadURL,
       width,
       height,
-      name: renamedFile.name,
+      name: photoName,
+      thumbName,
+      placeholderName,
     }
 
     await db
