@@ -6,6 +6,7 @@ import { RcFile } from 'antd/lib/upload'
 import arrayMove from 'array-move'
 import _ from 'lodash'
 
+import RouteLeavingProtector from '../route-leaving-protector/route-leaving-protector.component'
 import SortableGallery from '../sortable-gallery/sortable-gallery.component'
 import {
   selectPhotos,
@@ -71,7 +72,7 @@ const GalleryEditor = ({ photosetID }: IProps) => {
 
   const handleClear = () => dispatch(clearGallery())
 
-  const checkFileSize = (file: RcFile, _: RcFile[]) => {
+  const checkFileSize = (file: RcFile) => {
     const maxSizeMB = 20
     const isValid = file.size / 1024 / 1024 < maxSizeMB
 
@@ -85,72 +86,82 @@ const GalleryEditor = ({ photosetID }: IProps) => {
   }
 
   return (
-    <div className="gallery-editor">
-      {isPhotosetPresent ? (
-        <>
-          <Spin
-            spinning={isLoading}
-            indicator={<LoadingOutlined />}
-            wrapperClassName="content"
-          >
-            {!_.isEmpty(photos) ? (
-              <SortableGallery
-                photos={photos}
-                onSortStart={handleSortStart}
-                onSortEnd={handleSortEnd}
-                distance={1}
-                axis={'xy'}
-              />
-            ) : (
-              !isLoading && (
-                <Empty description="Немає фото" style={{ padding: '10px 20px' }} />
-              )
-            )}
-          </Spin>
+    <RouteLeavingProtector
+      when={isEdited}
+      modalConfig={{
+        title: 'Ви впевнені?',
+        content: 'Незбережені зміни буде втрачено.',
+        okText: 'Так',
+        cancelText: 'Назад',
+      }}
+    >
+      <div className="gallery-editor">
+        {isPhotosetPresent ? (
+          <>
+            <Spin
+              spinning={isLoading}
+              indicator={<LoadingOutlined />}
+              wrapperClassName="content"
+            >
+              {!_.isEmpty(photos) ? (
+                <SortableGallery
+                  photos={photos}
+                  onSortStart={handleSortStart}
+                  onSortEnd={handleSortEnd}
+                  distance={1}
+                  axis={'xy'}
+                />
+              ) : (
+                !isLoading && (
+                  <Empty description="Немає фото" style={{ padding: '10px 20px' }} />
+                )
+              )}
+            </Spin>
 
-          <Dragger
-            name="file"
-            multiple={true}
-            customRequest={uploadRequest}
-            beforeUpload={checkFileSize}
-            showUploadList={false}
-            accept="image/png, image/jpeg"
-            height={80}
-          >
-            <PlusOutlined />
-          </Dragger>
-          <div className="controls">
-            <Button
-              className="control-btn"
-              danger
-              shape="round"
-              disabled={_.isEmpty(photos)}
-              onClick={handleClear}
+            <Dragger
+              name="file"
+              multiple={true}
+              customRequest={uploadRequest}
+              beforeUpload={checkFileSize}
+              showUploadList={false}
+              accept="image/png, image/jpeg"
+              height={80}
             >
-              Очистити галерею
-            </Button>
-            <Button
-              className="control-btn"
-              shape="circle"
-              disabled={!isEdited}
-              onClick={handleRefresh}
-            >
-              <RedoOutlined />
-            </Button>
-            <Button
-              className="control-btn"
-              shape="round"
-              disabled={!isEdited}
-              onClick={handleSave}
-            >
-              Зберегти
-            </Button>
-          </div>
-        </>
-      ) : (
-        <>Фотосет не знайдено</>
-      )}
-    </div>
+              <PlusOutlined />
+            </Dragger>
+            <div className="controls">
+              <Button
+                className="control-btn"
+                danger
+                shape="round"
+                disabled={_.isEmpty(photos)}
+                onClick={handleClear}
+              >
+                Очистити галерею
+              </Button>
+              <Button
+                className="control-btn"
+                shape="circle"
+                disabled={!isEdited}
+                onClick={handleRefresh}
+              >
+                <RedoOutlined />
+              </Button>
+              <Button
+                className="control-btn"
+                shape="round"
+                disabled={!isEdited}
+                onClick={handleSave}
+              >
+                Зберегти
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>Фотосет не знайдено</>
+        )}
+      </div>
+    </RouteLeavingProtector>
   )
 }
 
