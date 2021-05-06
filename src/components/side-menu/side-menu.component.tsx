@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Link, useHistory, useLocation } from 'react-router-dom'
-import { Button, Menu, Modal, Form, message } from 'antd'
+import { Button, Menu, Modal, message } from 'antd'
 import {
   AppstoreOutlined,
   PlusOutlined,
   DeleteTwoTone,
   DeleteOutlined,
 } from '@ant-design/icons'
+import { useSelector, useDispatch } from 'react-redux'
 
-import AddPhotosetForm from '../add-photoset-form/add-photoset-form.component'
-import { db, deletePhotoset } from '../../firebase'
-import { IPhotoSet } from '../../interfaces/gallery.interfaces'
-import { IMenuItem } from '../../interfaces/menu.interface'
+import { deletePhotoset } from '../../firebase'
+import { fetchMenuItemsRequest } from '../../redux/menu/menu.actions'
+import { selectMenuItems } from '../../redux/menu/menu.selectors'
+import { showModal } from '../../redux/modal/modal.actions'
 
 import './side-menu.styles.scss'
 
@@ -20,45 +21,20 @@ interface IProps {
   activePhotosetID?: string
 }
 
-interface IMenuItems {
-  album: IMenuItem[]
-  serie: IMenuItem[]
-}
-
 const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
   const defaultActiveDropowns = defaultActiveDropown ? [defaultActiveDropown] : []
   const defaultSelectedItems = activePhotosetID ? [activePhotosetID] : []
 
   const [activeDropowns, setActiveDropowns] = useState(defaultActiveDropowns)
 
-  const [menuItems, setMenuItems] = useState<IMenuItems>({ album: [], serie: [] })
-
+  const menuItems = useSelector(selectMenuItems)
+  const dispatch = useDispatch()
   const location = useLocation()
   const history = useHistory()
 
   useEffect(() => {
-    fetchMenuItems()
-  }, [])
-
-  const fetchMenuItems = () => {
-    db.collection('sets')
-      .get()
-      .then((snapshot) => {
-        const items: IMenuItems = {
-          album: [],
-          serie: [],
-        }
-
-        snapshot.docs.forEach((doc) => {
-          const { routePath, label, id, type } = doc.data() as IPhotoSet
-
-          items[type].push({ routePath, label, id })
-        })
-
-        setMenuItems(items)
-      })
-      .catch(console.error)
-  }
+    dispatch(fetchMenuItemsRequest())
+  }, [dispatch])
 
   const onOpenChange = (openKeys: React.ReactText[]) => {
     setActiveDropowns(openKeys as string[])
@@ -79,7 +55,7 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
     try {
       await deletePhotoset(id)
       message.success('Видалено')
-      fetchMenuItems()
+      dispatch(fetchMenuItemsRequest())
       if (location.pathname.includes(id)) {
         history.push('/editor')
       }
@@ -89,60 +65,12 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
     }
   }
 
-  const showAddAlbumModal = () => {
-    Modal.confirm({
-      title: 'Додати альбом',
-      content: (
-        <AddPhotosetForm
-          photosetType="album"
-          formControlInstance={addAlbumFormControlInstance}
-          onFinish={({ photosetType, photosetID }) => {
-            fetchMenuItems()
-            history.push(`/editor/${photosetType}/${photosetID}`)
-          }}
-        />
-      ),
-      okText: 'Додати',
-      cancelText: 'Назад',
-      onOk: () =>
-        addAlbumFormControlInstance.validateFields().then(() => {
-          addAlbumFormControlInstance.submit()
-        }),
-    })
-  }
-
-  const showAddSerieModal = () => {
-    Modal.confirm({
-      title: 'Додати серію',
-      content: (
-        <AddPhotosetForm
-          photosetType="serie"
-          formControlInstance={addSerieFormControlInstance}
-          onFinish={({ photosetType, photosetID }) => {
-            fetchMenuItems()
-            history.push(`/editor/${photosetType}/${photosetID}`)
-          }}
-        />
-      ),
-      okText: 'Додати',
-      cancelText: 'Назад',
-      onOk: () =>
-        addSerieFormControlInstance.validateFields().then(() => {
-          addSerieFormControlInstance.submit()
-        }),
-    })
-  }
-
-  const [addAlbumFormControlInstance] = Form.useForm()
-  const [addSerieFormControlInstance] = Form.useForm()
-
   return (
     <Menu
       openKeys={activeDropowns}
       onOpenChange={onOpenChange}
       selectedKeys={defaultSelectedItems}
       mode="inline"
-      style={{ height: '100%' }}
       className="side-menu"
     >
       <Menu.SubMenu key="album" icon={<AppstoreOutlined />} title="Альбоми">
@@ -161,7 +89,11 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
           )
         })}
         <Menu.Item key="add-album">
-          <Button type="dashed" className="add-photoset-btn" onClick={showAddAlbumModal}>
+          <Button
+            type="dashed"
+            className="add-photoset-btn"
+            onClick={() => dispatch(showModal('add-album'))}
+          >
             Додати альбом
             <PlusOutlined className="add-photoset-icon" />
           </Button>
@@ -183,7 +115,11 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
           )
         })}
         <Menu.Item key="add-serie">
-          <Button type="dashed" className="add-photoset-btn" onClick={showAddSerieModal}>
+          <Button
+            type="dashed"
+            className="add-photoset-btn"
+            onClick={() => dispatch(showModal('add-serie'))}
+          >
             Додати серію
             <PlusOutlined className="add-photoset-icon" />
           </Button>

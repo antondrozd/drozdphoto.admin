@@ -45,8 +45,8 @@ export const createThumbnail = async (file: File | Blob) => {
   return new Promise<Blob>((resolve, reject) => {
     new Compressor(file, {
       quality: 1,
-      maxWidth: 1200,
-      maxHeight: 1200,
+      maxWidth: 900,
+      maxHeight: 900,
       success: resolve,
       error: reject,
     })

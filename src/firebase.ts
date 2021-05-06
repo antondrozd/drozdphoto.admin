@@ -3,6 +3,7 @@ import 'firebase/firestore'
 import 'firebase/storage'
 
 import { IPhoto, IPhotoSet } from './interfaces/gallery.interfaces'
+import { IMenuItems } from './interfaces/menu.interface'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyChdIJtbrb5nJeDTV8SQ-W1flNXrp2g89k',
@@ -19,6 +20,28 @@ export const db = firebase.firestore()
 export const storage = firebase.storage()
 
 // utils
+export const getMenuItems = async (): Promise<IMenuItems> => {
+  const items: IMenuItems = {
+    album: [],
+    serie: [],
+  }
+
+  try {
+    const snapshot = await db.collection('sets').get()
+
+    snapshot.docs.forEach((doc) => {
+      const { routePath, label, id, type } = doc.data() as IPhotoSet
+
+      items[type].push({ routePath, label, id })
+    })
+
+    return items
+  } catch (error) {
+    console.error(error)
+    return items
+  }
+}
+
 export const deletePhotos = (photos: IPhoto[]) => {
   photos.forEach(async (photo) => {
     await storage.ref().child(photo.name).delete()

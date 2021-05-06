@@ -1,12 +1,12 @@
 import { Form, Input, FormInstance, message } from 'antd'
 import { uid } from 'uid'
 
-import { db } from '../../firebase'
-import { PhotosetType } from '../../interfaces/common.interfaces'
-import { PhotoSet } from '../../interfaces/gallery.interfaces'
+import { db } from '../../../firebase'
+import { PhotosetType } from '../../../interfaces/common.interfaces'
+import { PhotoSet } from '../../../interfaces/gallery.interfaces'
 
 interface IProps {
-  formControlInstance: FormInstance
+  form: FormInstance
   photosetType: PhotosetType
   onFinish: ({
     photosetType,
@@ -17,7 +17,7 @@ interface IProps {
   }) => void
 }
 
-const AddPhotosetForm = ({ formControlInstance, photosetType, onFinish }: IProps) => {
+const AddPhotosetForm = ({ form, photosetType, onFinish }: IProps) => {
   const onAdd = ({ label, descr }: { label: string; descr: string }) => {
     const photoset = Object.assign(
       {},
@@ -29,14 +29,14 @@ const AddPhotosetForm = ({ formControlInstance, photosetType, onFinish }: IProps
       .set(photoset)
       .then(() => {
         message.success('Створено!')
-        formControlInstance.resetFields()
+        form.resetFields()
         onFinish({ photosetType, photosetID: photoset.id })
       })
       .catch((error: Error) => message.error(error.message))
   }
 
   return (
-    <Form form={formControlInstance} onFinish={onAdd}>
+    <Form form={form} onFinish={onAdd}>
       <Form.Item
         rules={[{ required: true, whitespace: true, message: 'Введіть назву' }]}
         name="label"
