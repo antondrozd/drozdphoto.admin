@@ -91,7 +91,7 @@ const GalleryEditor = ({ photosetID }: IProps) => {
       modalConfig={{
         title: 'Ви впевнені?',
         content: 'Незбережені зміни буде втрачено.',
-        okText: 'Так',
+        okText: 'Покинути сторінку',
         cancelText: 'Назад',
       }}
     >
