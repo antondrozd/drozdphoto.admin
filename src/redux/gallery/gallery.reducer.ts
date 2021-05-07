@@ -11,6 +11,7 @@ import {
   UPLOAD_PHOTO_REQUEST,
   CLEAR_GALLERY,
   SET_COVER,
+  SET_INITIAL_STATE,
 } from './gallery.actions'
 import { handleGalleryErrors } from './gallery.utils'
 import { IGalleryActions, IPhoto } from '../../interfaces/gallery.interfaces'
@@ -102,6 +103,8 @@ const galleryReducer = (state = initialState, action: IGalleryActions): IState =
         ...state,
         editing: { ...state.editing, photosToDelete: [], status: false },
       }
+    case SET_INITIAL_STATE:
+      return initialState
     default:
       return state
   }

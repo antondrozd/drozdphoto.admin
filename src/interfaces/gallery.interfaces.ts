@@ -13,6 +13,7 @@ import {
   SAVE_EDITED_REQUEST,
   CLEAR_GALLERY,
   SET_COVER,
+  SET_INITIAL_STATE,
 } from '../redux/gallery/gallery.actions'
 
 export interface IPhotoSet {
@@ -121,6 +122,8 @@ export interface IActionUploadPhotoFailure
   payload: Error
 }
 
+export interface IActionSetInitialState extends TypedAction<typeof SET_INITIAL_STATE> {}
+
 export type IGalleryActions =
   | IActionFetchPhotosetDataRequest
   | IActionFetchPhotosetDataSuccess
@@ -135,3 +138,4 @@ export type IGalleryActions =
   | IActionUploadPhotoRequest
   | IActionUploadPhotoSuccess
   | IActionUploadPhotoFailure
+  | IActionSetInitialState

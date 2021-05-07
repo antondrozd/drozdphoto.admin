@@ -24,7 +24,9 @@ const GalleryEditorPage = () => {
       <Sider>
         <SideMenu defaultActiveDropown={photosetType} activePhotosetID={id} />
       </Sider>
-      <Content>{id ? <GalleryEditor photosetID={id} /> : <>Оберіть фотосет</>}</Content>
+      <Content>
+        <GalleryEditor photosetID={id} />
+      </Content>
     </>
   )
 }

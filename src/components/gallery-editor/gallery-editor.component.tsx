@@ -21,6 +21,7 @@ import {
   reorderPhotos,
   saveEditedRequest,
   uploadPhotoRequest,
+  setInitialState,
 } from '../../redux/gallery/gallery.actions'
 
 import './gallery-editor.styles.scss'
@@ -28,7 +29,7 @@ import './gallery-editor.styles.scss'
 const { Dragger } = Upload
 
 interface IProps {
-  photosetID: string
+  photosetID?: string
 }
 
 const GalleryEditor = ({ photosetID }: IProps) => {
@@ -41,11 +42,13 @@ const GalleryEditor = ({ photosetID }: IProps) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(fetchPhotosetDataRequest(photosetID))
+    photosetID
+      ? dispatch(fetchPhotosetDataRequest(photosetID))
+      : dispatch(setInitialState())
   }, [dispatch, photosetID])
 
   const uploadRequest = ({ file }: { file: File }) =>
-    dispatch(uploadPhotoRequest(photosetID, file))
+    dispatch(uploadPhotoRequest(photosetID as string, file))
 
   const handleSortStart = () => document.body.classList.add('grabbing') // needed to enable grabbing cursor
 
@@ -65,10 +68,10 @@ const GalleryEditor = ({ photosetID }: IProps) => {
     document.body.classList.remove('grabbing') // needed to disable grabbing cursor
   }
 
-  const handleRefresh = () => dispatch(fetchPhotosetDataRequest(photosetID))
+  const handleRefresh = () => dispatch(fetchPhotosetDataRequest(photosetID as string))
 
   const handleSave = () =>
-    dispatch(saveEditedRequest(photosetID, { photos, coverImgSrc }))
+    dispatch(saveEditedRequest(photosetID as string, { photos, coverImgSrc }))
 
   const handleClear = () => dispatch(clearGallery())
 
@@ -96,69 +99,73 @@ const GalleryEditor = ({ photosetID }: IProps) => {
       }}
     >
       <div className="gallery-editor">
-        {isPhotosetPresent ? (
-          <>
-            <Spin
-              spinning={isLoading}
-              indicator={<LoadingOutlined />}
-              wrapperClassName="content"
-            >
-              {!_.isEmpty(photos) ? (
-                <SortableGallery
-                  photos={photos}
-                  onSortStart={handleSortStart}
-                  onSortEnd={handleSortEnd}
-                  distance={1}
-                  axis={'xy'}
-                />
-              ) : (
-                !isLoading && (
-                  <Empty description="Немає фото" style={{ padding: '10px 20px' }} />
-                )
-              )}
-            </Spin>
+        {photosetID ? (
+          isPhotosetPresent ? (
+            <>
+              <Spin
+                spinning={isLoading}
+                indicator={<LoadingOutlined />}
+                wrapperClassName="content"
+              >
+                {!_.isEmpty(photos) ? (
+                  <SortableGallery
+                    photos={photos}
+                    onSortStart={handleSortStart}
+                    onSortEnd={handleSortEnd}
+                    distance={1}
+                    axis={'xy'}
+                  />
+                ) : (
+                  !isLoading && (
+                    <Empty description="Немає фото" style={{ padding: '10px 20px' }} />
+                  )
+                )}
+              </Spin>
 
-            <Dragger
-              name="file"
-              multiple={true}
-              customRequest={uploadRequest}
-              beforeUpload={checkFileSize}
-              showUploadList={false}
-              accept="image/png, image/jpeg"
-              height={80}
-            >
-              <PlusOutlined />
-            </Dragger>
-            <div className="controls">
-              <Button
-                className="control-btn"
-                danger
-                shape="round"
-                disabled={_.isEmpty(photos)}
-                onClick={handleClear}
+              <Dragger
+                name="file"
+                multiple={true}
+                customRequest={uploadRequest}
+                beforeUpload={checkFileSize}
+                showUploadList={false}
+                accept="image/png, image/jpeg"
+                height={80}
               >
-                Очистити галерею
-              </Button>
-              <Button
-                className="control-btn"
-                shape="circle"
-                disabled={!isEdited}
-                onClick={handleRefresh}
-              >
-                <RedoOutlined />
-              </Button>
-              <Button
-                className="control-btn"
-                shape="round"
-                disabled={!isEdited}
-                onClick={handleSave}
-              >
-                Зберегти
-              </Button>
-            </div>
-          </>
+                <PlusOutlined />
+              </Dragger>
+              <div className="controls">
+                <Button
+                  className="control-btn"
+                  danger
+                  shape="round"
+                  disabled={_.isEmpty(photos)}
+                  onClick={handleClear}
+                >
+                  Очистити галерею
+                </Button>
+                <Button
+                  className="control-btn"
+                  shape="circle"
+                  disabled={!isEdited}
+                  onClick={handleRefresh}
+                >
+                  <RedoOutlined />
+                </Button>
+                <Button
+                  className="control-btn"
+                  shape="round"
+                  disabled={!isEdited}
+                  onClick={handleSave}
+                >
+                  Зберегти
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>Фотосет не знайдено</>
+          )
         ) : (
-          <>Фотосет не знайдено</>
+          <>Оберіть фотосет</>
         )}
       </div>
     </RouteLeavingProtector>

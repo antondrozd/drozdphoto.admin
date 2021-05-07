@@ -28,6 +28,7 @@ export const REMOVE_PHOTO = 'REMOVE_PHOTO'
 export const REORDER_PHOTOS = 'REORDER_PHOTOS'
 export const CLEAR_GALLERY = 'CLEAR_GALLERY'
 export const SET_COVER = 'SET_COVER'
+export const SET_INITIAL_STATE = 'SET_INITIAL_STATE'
 
 export const SAVE_EDITED_REQUEST = 'SAVE_EDITED_REQUEST'
 export const SAVE_EDITED_SUCCESS = 'SAVE_EDITED_SUCCESS'
@@ -190,4 +191,8 @@ const uploadPhotoSuccess = (photo: IPhoto): IGalleryActions => ({
 const uploadPhotoFailure = (error: any): IGalleryActions => ({
   type: UPLOAD_PHOTO_FAILURE,
   payload: error,
+})
+
+export const setInitialState = (): IGalleryActions => ({
+  type: SET_INITIAL_STATE,
 })
