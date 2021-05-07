@@ -1,19 +1,12 @@
 import { message } from 'antd'
-import { uid } from 'uid'
 import { ThunkAction } from 'redux-thunk'
 
-import firebase, { db, storage, deletePhotos } from '../../firebase'
-import {
-  compressPhoto,
-  createThumbnail,
-  createPlaceholder,
-  getAspectRatioFromImageFile,
-} from '../../utils'
+import API from '../../api'
 import {
   IPhoto,
   IGalleryActions,
-  IPhotoSet,
   IPhotosetGalleryData,
+  IPhotosetEditedGalleryData,
 } from '../../interfaces/gallery.interfaces'
 import { IStore } from '../../interfaces/common.interfaces'
 
@@ -40,15 +33,7 @@ export const fetchPhotosetDataRequest = (
   dispatch({ type: FETCH_PHOTOSET_DATA_REQUEST })
 
   try {
-    const docSnapshot = await db.doc(`sets/${photosetID}`).get()
-    if (!docSnapshot.exists) {
-      const error = new Error('Document does not exist in firestore')
-      error.name = 'photoset not found'
-
-      throw error
-    }
-
-    const { photos, coverImgSrc } = docSnapshot.data() as IPhotoSet
+    const { photos, coverImgSrc } = await API.getPhotoset(photosetID)
 
     dispatch(fetchPhotosetDataSuccess({ photos, coverImgSrc }))
   } catch (error) {
@@ -87,18 +72,12 @@ export const setCover = (coverImgSrc: string | null): IGalleryActions => ({
 
 export const saveEditedRequest = (
   photosetID: string,
-  data: IPhotosetGalleryData
-): ThunkAction<void, IStore, unknown, IGalleryActions> => async (dispatch, getState) => {
+  data: IPhotosetEditedGalleryData
+): ThunkAction<void, IStore, unknown, IGalleryActions> => async (dispatch) => {
   dispatch({ type: SAVE_EDITED_REQUEST })
 
   try {
-    const { photos, coverImgSrc } = data
-
-    await db
-      .doc(`sets/${photosetID}`)
-      .update('photos', photos, 'coverImgSrc', coverImgSrc)
-
-    deletePhotos(getState().gallery.editing.photosToDelete)
+    await API.updatePhotoset(photosetID, data)
 
     dispatch(saveEditedSuccess())
     message.success('Збережено!')
@@ -124,58 +103,9 @@ export const uploadPhotoRequest = (
   dispatch({ type: UPLOAD_PHOTO_REQUEST })
 
   try {
-    const [originFileName, fileExt] = file.name.split('.')
-    const id = uid()
-    const photoName = `${originFileName}-${id}.${fileExt}`
-    const thumbName = `${originFileName}-${id}-thumb.${fileExt}`
-    const placeholderName = `${originFileName}-${id}-placeholder.${fileExt}`
-
-    const compressedPhoto = await compressPhoto(file)
-    const thumbnail = await createThumbnail(compressedPhoto)
-    const placeholder = await createPlaceholder(thumbnail)
-
-    const photoToUpload = new File([compressedPhoto], photoName, {
-      type: compressedPhoto.type,
-    })
-    const thumbnailToUpload = new File([thumbnail], thumbName, {
-      type: compressedPhoto.type,
-    })
-    const placeholderToUpload = new File([placeholder], placeholderName, {
-      type: compressedPhoto.type,
-    })
-
-    const photoRef = storage.ref().child(photoName)
-    const thumbnailRef = storage.ref().child(thumbName)
-    const placeholderRef = storage.ref().child(placeholderName)
-
-    const photoSnapshot = await photoRef.put(photoToUpload)
-    const thumbnailSnapshot = await thumbnailRef.put(thumbnailToUpload)
-    const placeholderSnapshot = await placeholderRef.put(placeholderToUpload)
-
-    const photoDownloadURL = await photoSnapshot.ref.getDownloadURL()
-    const thumbnailDownloadURL = await thumbnailSnapshot.ref.getDownloadURL()
-    const placeholderDownloadURL = await placeholderSnapshot.ref.getDownloadURL()
-
-    const { width, height } = await getAspectRatioFromImageFile(photoToUpload)
-
-    const photo: IPhoto = {
-      id,
-      src: photoDownloadURL,
-      thumbSrc: thumbnailDownloadURL,
-      placeholderScr: placeholderDownloadURL,
-      width,
-      height,
-      name: photoName,
-      thumbName,
-      placeholderName,
-    }
-
-    await db
-      .doc(`sets/${photosetID}`)
-      .update('photos', firebase.firestore.FieldValue.arrayUnion(photo))
+    const photo = await API.uploadPhoto(photosetID, file)
 
     dispatch(uploadPhotoSuccess(photo))
-
     // message.success(`${file.name} file uploaded successfully.`)
   } catch (error) {
     dispatch(uploadPhotoFailure(error))

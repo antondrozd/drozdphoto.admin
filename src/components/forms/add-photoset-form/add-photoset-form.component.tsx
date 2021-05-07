@@ -1,7 +1,7 @@
 import { Form, Input, FormInstance, message } from 'antd'
 import { uid } from 'uid'
 
-import { addPhotoset } from '../../../firebase'
+import API from '../../../api'
 import { PhotosetType } from '../../../interfaces/common.interfaces'
 import { PhotoSet } from '../../../interfaces/gallery.interfaces'
 
@@ -25,7 +25,7 @@ const AddPhotosetForm = ({ form, photosetType, onFinish }: IProps) => {
     ) // needed because firebase don't accept custom objects
 
     try {
-      await addPhotoset(photoset)
+      await API.addPhotoset(photoset)
       message.success('Створено!')
       form.resetFields()
       onFinish({ photosetType, photosetID: photoset.id })

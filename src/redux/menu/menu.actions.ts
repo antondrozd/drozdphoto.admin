@@ -1,6 +1,6 @@
 import { ThunkAction } from 'redux-thunk'
 
-import { getMenuItems } from '../../firebase'
+import API from '../../api'
 
 import { IStore } from '../../interfaces/common.interfaces'
 import { IMenuActions, IMenuItems } from '../../interfaces/menu.interface'
@@ -17,8 +17,13 @@ export const fetchMenuItemsRequest = (): ThunkAction<
 > => async (dispatch) => {
   dispatch({ type: FETCH_MENU_ITEMS_REQUEST })
 
-  const items = await getMenuItems()
-  dispatch(fetchMenuItemsSuccess(items))
+  try {
+    const items = await API.getMenuItems()
+
+    dispatch(fetchMenuItemsSuccess(items))
+  } catch (error) {
+    dispatch(fetchMenuItemsFailure(error))
+  }
 }
 
 export const fetchMenuItemsSuccess = (items: IMenuItems): IMenuActions => ({

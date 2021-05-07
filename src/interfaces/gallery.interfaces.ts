@@ -69,6 +69,11 @@ export interface IPhoto {
 }
 
 export type IPhotosetGalleryData = Pick<IPhotoSet, 'coverImgSrc' | 'photos'>
+
+export type IPhotosetEditedGalleryData = IPhotosetGalleryData & {
+  photosToDelete: IPhoto[]
+}
+
 export type IPhotosetMetaData = Pick<IPhotoSet, 'label' | 'descr'>
 
 export interface IActionFetchPhotosetDataRequest

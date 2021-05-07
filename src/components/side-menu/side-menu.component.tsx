@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { deletePhotoset } from '../../firebase'
+import API from '../../api'
 import { fetchMenuItemsRequest } from '../../redux/menu/menu.actions'
 import { selectMenuItems } from '../../redux/menu/menu.selectors'
 import { showModal } from '../../redux/modal/modal.actions'
@@ -53,7 +53,7 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
 
   const onPhotosetDeleteConfirm = async (id: string) => {
     try {
-      await deletePhotoset(id)
+      await API.deletePhotoset(id)
       message.success('Видалено')
       dispatch(fetchMenuItemsRequest())
       if (location.pathname.includes(id)) {

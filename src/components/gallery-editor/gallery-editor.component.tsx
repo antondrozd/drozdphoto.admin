@@ -14,6 +14,7 @@ import {
   selectIsLoading,
   selectCoverImgSrc,
   selectIsPresent,
+  selectPhotosToDelete,
 } from '../../redux/gallery/gallery.selectors'
 import {
   clearGallery,
@@ -35,6 +36,7 @@ interface IProps {
 const GalleryEditor = ({ photosetID }: IProps) => {
   const photos = useSelector(selectPhotos)
   const coverImgSrc = useSelector(selectCoverImgSrc)
+  const photosToDelete = useSelector(selectPhotosToDelete)
   const isEdited = useSelector(selectIsEdited)
   const isLoading = useSelector(selectIsLoading)
   const isPhotosetPresent = useSelector(selectIsPresent)
@@ -71,7 +73,9 @@ const GalleryEditor = ({ photosetID }: IProps) => {
   const handleRefresh = () => dispatch(fetchPhotosetDataRequest(photosetID as string))
 
   const handleSave = () =>
-    dispatch(saveEditedRequest(photosetID as string, { photos, coverImgSrc }))
+    dispatch(
+      saveEditedRequest(photosetID as string, { photos, coverImgSrc, photosToDelete })
+    )
 
   const handleClear = () => dispatch(clearGallery())
 
