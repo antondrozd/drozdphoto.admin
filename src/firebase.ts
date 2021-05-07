@@ -42,6 +42,10 @@ export const getMenuItems = async (): Promise<IMenuItems> => {
   }
 }
 
+export const addPhotoset = async (photoset: IPhotoSet) => {
+  return db.collection('sets').doc(photoset.id).set(photoset)
+}
+
 export const deletePhotos = (photos: IPhoto[]) => {
   photos.forEach(async (photo) => {
     await storage.ref().child(photo.name).delete()

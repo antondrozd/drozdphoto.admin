@@ -1,7 +1,7 @@
 import { Form, Input, FormInstance, message } from 'antd'
 import { uid } from 'uid'
 
-import { db } from '../../../firebase'
+import { addPhotoset } from '../../../firebase'
 import { PhotosetType } from '../../../interfaces/common.interfaces'
 import { PhotoSet } from '../../../interfaces/gallery.interfaces'
 
@@ -18,21 +18,20 @@ interface IProps {
 }
 
 const AddPhotosetForm = ({ form, photosetType, onFinish }: IProps) => {
-  const onAdd = ({ label, descr }: { label: string; descr: string }) => {
+  const onAdd = async ({ label, descr }: { label: string; descr: string }) => {
     const photoset = Object.assign(
       {},
       new PhotoSet({ id: uid(), label, descr, type: photosetType })
     ) // needed because firebase don't accept custom objects
 
-    db.collection('sets')
-      .doc(photoset.id)
-      .set(photoset)
-      .then(() => {
-        message.success('Створено!')
-        form.resetFields()
-        onFinish({ photosetType, photosetID: photoset.id })
-      })
-      .catch((error: Error) => message.error(error.message))
+    try {
+      await addPhotoset(photoset)
+      message.success('Створено!')
+      form.resetFields()
+      onFinish({ photosetType, photosetID: photoset.id })
+    } catch (error) {
+      message.error(error.message)
+    }
   }
 
   return (
