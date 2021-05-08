@@ -16,16 +16,15 @@ export const FETCH_PHOTOSET_DATA_FAILURE = 'FETCH_PHOTOSET_DATA_FAILURE'
 export const UPLOAD_PHOTO_REQUEST = 'UPLOAD_PHOTO_REQUEST'
 export const UPLOAD_PHOTO_SUCCESS = 'UPLOAD_PHOTO_SUCCESS'
 export const UPLOAD_PHOTO_FAILURE = 'UPLOAD_PHOTO_FAILURE'
+export const SAVE_EDITED_REQUEST = 'SAVE_EDITED_REQUEST'
+export const SAVE_EDITED_SUCCESS = 'SAVE_EDITED_SUCCESS'
+export const SAVE_EDITED_FAILURE = 'SAVE_EDITED_FAILURE'
 
 export const REMOVE_PHOTO = 'REMOVE_PHOTO'
 export const REORDER_PHOTOS = 'REORDER_PHOTOS'
 export const CLEAR_GALLERY = 'CLEAR_GALLERY'
 export const SET_COVER = 'SET_COVER'
 export const SET_INITIAL_STATE = 'SET_INITIAL_STATE'
-
-export const SAVE_EDITED_REQUEST = 'SAVE_EDITED_REQUEST'
-export const SAVE_EDITED_SUCCESS = 'SAVE_EDITED_SUCCESS'
-export const SAVE_EDITED_FAILURE = 'SAVE_EDITED_FAILURE'
 
 export const fetchPhotosetDataRequest = (
   photosetID: string
@@ -46,7 +45,7 @@ const fetchPhotosetDataSuccess = (data: IPhotosetGalleryData): IGalleryActions =
   payload: data,
 })
 
-const fetchPhotosetDataFailure = (error: any): IGalleryActions => ({
+const fetchPhotosetDataFailure = (error: Error): IGalleryActions => ({
   type: FETCH_PHOTOSET_DATA_FAILURE,
   payload: error,
 })
@@ -91,7 +90,7 @@ const saveEditedSuccess = (): IGalleryActions => ({
   type: SAVE_EDITED_SUCCESS,
 })
 
-const saveEditedFailure = (error: any): IGalleryActions => ({
+const saveEditedFailure = (error: Error): IGalleryActions => ({
   type: SAVE_EDITED_FAILURE,
   payload: error,
 })
@@ -99,7 +98,7 @@ const saveEditedFailure = (error: any): IGalleryActions => ({
 export const uploadPhotoRequest = (
   photosetID: string,
   file: File
-): ThunkAction<void, IStore, unknown, IGalleryActions> => async (dispatch: any) => {
+): ThunkAction<void, IStore, unknown, IGalleryActions> => async (dispatch) => {
   dispatch({ type: UPLOAD_PHOTO_REQUEST })
 
   try {
@@ -118,7 +117,7 @@ const uploadPhotoSuccess = (photo: IPhoto): IGalleryActions => ({
   payload: photo,
 })
 
-const uploadPhotoFailure = (error: any): IGalleryActions => ({
+const uploadPhotoFailure = (error: Error): IGalleryActions => ({
   type: UPLOAD_PHOTO_FAILURE,
   payload: error,
 })

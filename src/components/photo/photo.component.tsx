@@ -19,11 +19,9 @@ const Photo = ({ photo, margin, direction, top, left }: RenderImageProps<IPhoto>
   const isSelectedAsCover = coverImgSrc === photo.src
 
   // required by react-sortable-gallery
-  const imgStyle: CSSProperties = { margin: margin }
+  let imgStyle: CSSProperties = { margin }
   if (direction === 'column') {
-    imgStyle.position = 'absolute'
-    imgStyle.left = left
-    imgStyle.top = top
+    imgStyle = { ...imgStyle, position: 'absolute', left, top }
   }
 
   const handleRemove = () => {
@@ -52,6 +50,8 @@ const Photo = ({ photo, margin, direction, top, left }: RenderImageProps<IPhoto>
         onClick={() => handleCoverSelect(photo)}
       />
       <LazyLoadImage
+        style={imgStyle}
+        wrapperProps={{ style: { display: 'block' } }}
         width={photo.width}
         height={photo.height}
         src={photo.thumbSrc}
