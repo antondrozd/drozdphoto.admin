@@ -13,7 +13,7 @@ import {
   selectIsEdited,
   selectIsLoading,
   selectCoverImgSrc,
-  selectIsPresent,
+  selectIsRequestedPhotosetPresent,
   selectPhotosToDelete,
 } from '../../redux/gallery/gallery.selectors'
 import {
@@ -22,7 +22,7 @@ import {
   reorderPhotos,
   saveEditedRequest,
   uploadPhotoRequest,
-  setInitialState,
+  setNoPhotosetSelected,
 } from '../../redux/gallery/gallery.actions'
 
 import './gallery-editor.styles.scss'
@@ -39,14 +39,14 @@ const GalleryEditor = ({ photosetID }: IProps) => {
   const photosToDelete = useSelector(selectPhotosToDelete)
   const isEdited = useSelector(selectIsEdited)
   const isLoading = useSelector(selectIsLoading)
-  const isPhotosetPresent = useSelector(selectIsPresent)
+  const isPhotosetPresent = useSelector(selectIsRequestedPhotosetPresent)
 
   const dispatch = useDispatch()
 
   useEffect(() => {
     photosetID
       ? dispatch(fetchPhotosetDataRequest(photosetID))
-      : dispatch(setInitialState())
+      : dispatch(setNoPhotosetSelected())
   }, [dispatch, photosetID])
 
   const uploadRequest = ({ file }: { file: File }) =>
@@ -98,7 +98,7 @@ const GalleryEditor = ({ photosetID }: IProps) => {
       modalConfig={{
         title: 'Ви впевнені?',
         content: 'Незбережені зміни буде втрачено.',
-        okText: 'Покинути сторінку',
+        okText: 'Перейти до іншої галереї',
         cancelText: 'Назад',
       }}
     >

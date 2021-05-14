@@ -11,10 +11,13 @@ import {
   UPLOAD_PHOTO_REQUEST,
   CLEAR_GALLERY,
   SET_COVER,
-  SET_INITIAL_STATE,
+  SET_NO_PHOTOSET_SELECTED,
+  FETCH_MENU_ITEMS_SUCCESS,
+  FETCH_MENU_ITEMS_FAILURE,
 } from './gallery.actions'
 import { handleGalleryErrors } from './gallery.utils'
-import { IGalleryActions, IPhoto } from '../../interfaces/gallery.interfaces'
+
+import { IGalleryActions, IPhoto, IMenuItems } from '../../interfaces/gallery.interfaces'
 
 export interface IState {
   photos: IPhoto[]
@@ -23,8 +26,9 @@ export interface IState {
     status: boolean
     photosToDelete: IPhoto[]
   }
+  menuItems: IMenuItems
   isLoading: boolean
-  isPresent: boolean
+  isRequestedPhotosetPresent: boolean
   error: Error | null
 }
 
@@ -35,8 +39,9 @@ const initialState: IState = {
     status: false,
     photosToDelete: [],
   },
+  menuItems: { 'portfolio-album': [], 'serie-album': [] },
   isLoading: false,
-  isPresent: true,
+  isRequestedPhotosetPresent: true,
   error: null,
 }
 
@@ -48,10 +53,10 @@ const galleryReducer = (state = initialState, action: IGalleryActions): IState =
       return {
         ...state,
         photos: action.payload.photos,
-        coverImgSrc: action.payload.coverImgSrc,
+        coverImgSrc: 'coverImgSrc' in action.payload ? action.payload.coverImgSrc : null,
         editing: { ...state.editing, photosToDelete: [], status: false },
         isLoading: false,
-        isPresent: true,
+        isRequestedPhotosetPresent: true,
         error: null,
       }
     case UPLOAD_PHOTO_REQUEST:
@@ -62,9 +67,12 @@ const galleryReducer = (state = initialState, action: IGalleryActions): IState =
         photos: [...state.photos, action.payload],
         isLoading: false,
       }
+    case FETCH_MENU_ITEMS_SUCCESS:
+      return { ...state, menuItems: action.payload, error: null }
     case FETCH_PHOTOSET_DATA_FAILURE:
     case SAVE_EDITED_FAILURE:
     case UPLOAD_PHOTO_FAILURE:
+    case FETCH_MENU_ITEMS_FAILURE:
       return handleGalleryErrors(action.payload, state)
     case REMOVE_PHOTO:
       return {
@@ -103,8 +111,8 @@ const galleryReducer = (state = initialState, action: IGalleryActions): IState =
         ...state,
         editing: { ...state.editing, photosToDelete: [], status: false },
       }
-    case SET_INITIAL_STATE:
-      return initialState
+    case SET_NO_PHOTOSET_SELECTED:
+      return { ...initialState, menuItems: state.menuItems }
     default:
       return state
   }

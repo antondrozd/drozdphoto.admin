@@ -10,27 +10,43 @@ import {
 
 import {
   IPhoto,
-  IPhotoSet,
+  IPhotoset,
   IPhotosetEditedGalleryData,
+  IPortfolioAlbum,
+  IMenuItems,
 } from './interfaces/gallery.interfaces'
-import { IMenuItems } from './interfaces/menu.interface'
 
 class API {
   getMenuItems = async (): Promise<IMenuItems> => {
     const items: IMenuItems = {
-      album: [],
-      serie: [],
+      'portfolio-album': [],
+      'serie-album': [],
     }
 
-    const snapshot = await db.collection('sets').get()
+    const querySnapshot = await db.collection('sets').get()
 
-    snapshot.docs.forEach((doc) => {
-      const { routePath, label, id, type } = doc.data() as IPhotoSet
+    querySnapshot.forEach((doc) => {
+      const { routePath, label, id, type } = doc.data() as IPhotoset
 
       items[type].push({ routePath, label, id })
     })
 
     return items
+  }
+
+  getCategories = async () => {
+    const photosetsSnapshot = await db
+      .collection('sets')
+      .where('type', '==', 'portfolio-album')
+      .get()
+
+    const categories = photosetsSnapshot.docs.map((doc) => {
+      const { label: category } = doc.data() as IPortfolioAlbum
+
+      return category
+    })
+
+    return categories
   }
 
   getPhotoset = async (photosetID: string) => {
@@ -43,19 +59,17 @@ class API {
       throw error
     }
 
-    return docSnapshot.data() as IPhotoSet
+    return docSnapshot.data() as IPhotoset
   }
 
-  addPhotoset = async (photoset: IPhotoSet) => {
+  addPhotoset = async (photoset: IPhotoset) => {
     return db.collection('sets').doc(photoset.id).set(photoset)
   }
 
   updatePhotoset = async (photosetID: string, data: IPhotosetEditedGalleryData) => {
-    const { photos, coverImgSrc, photosToDelete } = data
+    const { photosToDelete, ...galleryData } = data
 
-    await db
-      .doc(`sets/${photosetID}`)
-      .update('photos', photos, 'coverImgSrc', coverImgSrc)
+    await db.doc(`sets/${photosetID}`).update(galleryData)
 
     this.deletePhotos(photosToDelete)
   }
@@ -74,7 +88,7 @@ class API {
 
     if (!docSnapshot.exists) throw new Error('Document does not exist')
 
-    const { photos } = docSnapshot.data() as IPhotoSet
+    const { photos } = docSnapshot.data() as IPhotoset
 
     await docRef.delete()
     this.deletePhotos(photos)

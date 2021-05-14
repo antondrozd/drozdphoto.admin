@@ -4,10 +4,14 @@ import { Layout } from 'antd'
 import SideMenu from '../../components/side-menu/side-menu.component'
 import GalleryEditor from '../../components/gallery-editor/gallery-editor.component'
 
+import { PhotosetType } from '../../interfaces/common.interfaces'
+
+import './gallery-editor-page.styles.scss'
+
 const { Sider, Content } = Layout
 
 interface IRouteParams {
-  photosetType?: string
+  photosetType?: PhotosetType
   id?: string
 }
 
@@ -21,7 +25,7 @@ const GalleryEditorPage = () => {
 
   return (
     <>
-      <Sider>
+      <Sider collapsible width={235} className="sider">
         <SideMenu defaultActiveDropown={photosetType} activePhotosetID={id} />
       </Sider>
       <Content>

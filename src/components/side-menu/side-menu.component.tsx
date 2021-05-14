@@ -10,8 +10,8 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 
 import API from '../../api'
-import { fetchMenuItemsRequest } from '../../redux/menu/menu.actions'
-import { selectMenuItems } from '../../redux/menu/menu.selectors'
+import { fetchMenuItemsRequest } from '../../redux/gallery/gallery.actions'
+import { selectMenuItems } from '../../redux/gallery/gallery.selectors'
 import { showModal } from '../../redux/modal/modal.actions'
 
 import './side-menu.styles.scss'
@@ -73,34 +73,34 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
       mode="inline"
       className="side-menu"
     >
-      <Menu.SubMenu key="album" icon={<AppstoreOutlined />} title="Альбоми">
-        {menuItems.album.map(({ label, routePath, id }) => {
+      <Menu.SubMenu key="portfolio-album" icon={<AppstoreOutlined />} title="Портфоліо">
+        {menuItems['portfolio-album'].map(({ label, routePath, id }) => {
           return (
             <Menu.Item key={id} className="side-menu-item">
-              <DeleteTwoTone
+              {/* <DeleteTwoTone
                 twoToneColor="#eb2f96"
                 className="delete-icon"
                 onClick={() => onPhotosetDeleteRequest(id, label)}
-              />
-              <Link to={`/editor/album${routePath}`} title={label}>
+              /> */}
+              <Link to={`/editor/portfolio-album${routePath}`} title={label}>
                 {label}
               </Link>
             </Menu.Item>
           )
         })}
-        <Menu.Item key="add-album">
+        {/* <Menu.Item key="add-album">
           <Button
             type="dashed"
             className="add-photoset-btn"
-            onClick={() => dispatch(showModal('add-album'))}
+            onClick={() => dispatch(showModal('add-portfolio-album'))}
           >
-            Додати альбом
+            Додати категорію
             <PlusOutlined className="add-photoset-icon" />
           </Button>
-        </Menu.Item>
+        </Menu.Item> */}
       </Menu.SubMenu>
-      <Menu.SubMenu key="serie" icon={<AppstoreOutlined />} title="Серії">
-        {menuItems.serie.map(({ label, routePath, id }) => {
+      <Menu.SubMenu key="serie-album" icon={<AppstoreOutlined />} title="Серії">
+        {menuItems['serie-album'].map(({ label, routePath, id }) => {
           return (
             <Menu.Item key={id} className="side-menu-item">
               <DeleteTwoTone
@@ -108,7 +108,7 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
                 className="delete-icon"
                 onClick={() => onPhotosetDeleteRequest(id, label)}
               />
-              <Link to={`/editor/serie${routePath}`} title={label}>
+              <Link to={`/editor/serie-album${routePath}`} title={label}>
                 {label}
               </Link>
             </Menu.Item>
@@ -118,9 +118,9 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
           <Button
             type="dashed"
             className="add-photoset-btn"
-            onClick={() => dispatch(showModal('add-serie'))}
+            onClick={() => dispatch(showModal('add-serie-album'))}
           >
-            Додати серію
+            Додати альбом
             <PlusOutlined className="add-photoset-icon" />
           </Button>
         </Menu.Item>

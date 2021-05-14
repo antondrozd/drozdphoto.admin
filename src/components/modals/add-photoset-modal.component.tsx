@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Modal, Form } from 'antd'
 
 import AddPhotosetForm from '../forms/add-photoset-form/add-photoset-form.component'
-import { fetchMenuItemsRequest } from '../../redux/menu/menu.actions'
+import { fetchMenuItemsRequest } from '../../redux/gallery/gallery.actions'
 import { hideModal } from '../../redux/modal/modal.actions'
 import { selectActiveModal } from '../../redux/modal/modal.selectors'
 
@@ -16,9 +16,12 @@ interface IProps {
 }
 
 const AddPhotosetModal = ({ photosetType, visible }: IProps) => {
+  // prettier-ignore
   const title =
-    (photosetType === 'album' && 'Додати альбом') ||
-    (photosetType === 'serie' && 'Додати серію')
+    (
+      (photosetType === 'portfolio-album' && 'Додати категорію') ||
+      (photosetType === 'serie-album' && 'Додати серію')
+    ) as string
 
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [form] = Form.useForm()
@@ -57,13 +60,23 @@ const AddPhotosetModal = ({ photosetType, visible }: IProps) => {
 export const AddAlbumModal = () => {
   const activeModal = useSelector(selectActiveModal)
 
-  return <AddPhotosetModal photosetType="album" visible={activeModal === 'add-album'} />
+  return (
+    <AddPhotosetModal
+      photosetType="portfolio-album"
+      visible={activeModal === 'add-portfolio-album'}
+    />
+  )
 }
 
 export const AddSerieModal = () => {
   const activeModal = useSelector(selectActiveModal)
 
-  return <AddPhotosetModal photosetType="serie" visible={activeModal === 'add-serie'} />
+  return (
+    <AddPhotosetModal
+      photosetType="serie-album"
+      visible={activeModal === 'add-serie-album'}
+    />
+  )
 }
 
 export default AddPhotosetModal

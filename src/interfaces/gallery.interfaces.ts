@@ -1,4 +1,3 @@
-import { PhotosetType, TypedAction } from './common.interfaces'
 import {
   FETCH_PHOTOSET_DATA_REQUEST,
   FETCH_PHOTOSET_DATA_FAILURE,
@@ -13,48 +12,34 @@ import {
   SAVE_EDITED_REQUEST,
   CLEAR_GALLERY,
   SET_COVER,
-  SET_INITIAL_STATE,
+  SET_NO_PHOTOSET_SELECTED,
+  FETCH_MENU_ITEMS_REQUEST,
+  FETCH_MENU_ITEMS_SUCCESS,
+  FETCH_MENU_ITEMS_FAILURE,
 } from '../redux/gallery/gallery.actions'
 
-export interface IPhotoSet {
+import { TypedAction, PhotosetType } from './common.interfaces'
+
+export interface IPortfolioAlbum {
+  id: string
+  label: string
+  routePath: string
+  type: 'portfolio-album'
+  photos: IPhoto[]
+}
+
+export interface ISerieAlbum {
   id: string
   label: string
   descr: string
   routePath: string
   coverImgSrc: string | null
-  type: PhotosetType
+  type: 'serie-album'
+  category: string
   photos: IPhoto[]
 }
 
-export class PhotoSet implements IPhotoSet {
-  id: string
-  label: string
-  descr: string
-  routePath: string
-  coverImgSrc: string | null
-  type: PhotosetType
-  photos: IPhoto[]
-
-  constructor({
-    id,
-    label,
-    descr,
-    type,
-  }: {
-    id: string
-    label: string
-    descr: string
-    type: PhotosetType
-  }) {
-    this.id = id
-    this.label = label
-    this.descr = descr || ''
-    this.routePath = `/${id}`
-    this.coverImgSrc = null
-    this.type = type
-    this.photos = []
-  }
-}
+export type IPhotoset = IPortfolioAlbum | ISerieAlbum
 
 export interface IPhoto {
   id: string
@@ -68,13 +53,42 @@ export interface IPhoto {
   height: number
 }
 
-export type IPhotosetGalleryData = Pick<IPhotoSet, 'coverImgSrc' | 'photos'>
+export type IPortfolioAlbumGalleryData = Pick<IPortfolioAlbum, 'photos'>
+export type ISerieAlbumGalleryData = Pick<ISerieAlbum, 'coverImgSrc' | 'photos'>
+export type IPhotosetGalleryData = IPortfolioAlbumGalleryData | ISerieAlbumGalleryData
 
-export type IPhotosetEditedGalleryData = IPhotosetGalleryData & {
+export type IPortfolioAlbumEditedGalleryData = IPortfolioAlbumGalleryData & {
   photosToDelete: IPhoto[]
 }
+export type ISerieAlbumEditedGalleryData = ISerieAlbumGalleryData & {
+  photosToDelete: IPhoto[]
+}
+export type IPhotosetEditedGalleryData =
+  | IPortfolioAlbumEditedGalleryData
+  | ISerieAlbumEditedGalleryData
 
-export type IPhotosetMetaData = Pick<IPhotoSet, 'label' | 'descr'>
+export type IAlbumMetaData = Pick<IPortfolioAlbum, 'label'>
+export type ISerieMetaData = Pick<ISerieAlbum, 'label' | 'descr' | 'category'>
+export type IPhotosetMetaData = IAlbumMetaData | ISerieMetaData
+
+export type IMenuItem = Pick<IPhotoset, 'label' | 'routePath' | 'id'>
+
+export type IMenuItems = {
+  [key in PhotosetType]: IMenuItem[]
+}
+
+export interface IActionFetchMenuItemsRequest
+  extends TypedAction<typeof FETCH_MENU_ITEMS_REQUEST> {}
+
+export interface IActionFetchMenuItemsSuccess
+  extends TypedAction<typeof FETCH_MENU_ITEMS_SUCCESS> {
+  payload: IMenuItems
+}
+
+export interface IActionFetchMenuItemsFailure
+  extends TypedAction<typeof FETCH_MENU_ITEMS_FAILURE> {
+  payload: Error
+}
 
 export interface IActionFetchPhotosetDataRequest
   extends TypedAction<typeof FETCH_PHOTOSET_DATA_REQUEST> {}
@@ -127,7 +141,8 @@ export interface IActionUploadPhotoFailure
   payload: Error
 }
 
-export interface IActionSetInitialState extends TypedAction<typeof SET_INITIAL_STATE> {}
+export interface IActionSetInitialState
+  extends TypedAction<typeof SET_NO_PHOTOSET_SELECTED> {}
 
 export type IGalleryActions =
   | IActionFetchPhotosetDataRequest
@@ -144,3 +159,6 @@ export type IGalleryActions =
   | IActionUploadPhotoSuccess
   | IActionUploadPhotoFailure
   | IActionSetInitialState
+  | IActionFetchMenuItemsRequest
+  | IActionFetchMenuItemsSuccess
+  | IActionFetchMenuItemsFailure

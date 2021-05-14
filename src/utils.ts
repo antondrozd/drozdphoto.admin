@@ -2,6 +2,58 @@ import calculateRatio from 'calculate-aspect-ratio'
 import promisifiedFileReader from 'promise-file-reader'
 import Compressor from 'compressorjs'
 
+import { IPortfolioAlbum, ISerieAlbum, IPhoto } from './interfaces/gallery.interfaces'
+
+export class PortfolioAlbum implements IPortfolioAlbum {
+  id: string
+  label: string
+  routePath: string
+  coverImgSrc: string | null
+  type: 'portfolio-album'
+  photos: IPhoto[]
+
+  constructor({ id, label }: { id: string; label: string }) {
+    this.id = id
+    this.label = label
+    this.routePath = `/${id}`
+    this.coverImgSrc = null
+    this.type = 'portfolio-album'
+    this.photos = []
+  }
+}
+
+export class SerieAlbum implements ISerieAlbum {
+  id: string
+  label: string
+  descr: string
+  routePath: string
+  coverImgSrc: string | null
+  type: 'serie-album'
+  category: string
+  photos: IPhoto[]
+
+  constructor({
+    id,
+    label,
+    descr,
+    category,
+  }: {
+    id: string
+    label: string
+    descr: string
+    category: string
+  }) {
+    this.id = id
+    this.label = label
+    this.descr = descr || ''
+    this.routePath = `/${id}`
+    this.coverImgSrc = null
+    this.type = 'serie-album'
+    this.category = category
+    this.photos = []
+  }
+}
+
 interface IRatio {
   width: number
   height: number

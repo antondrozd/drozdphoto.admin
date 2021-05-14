@@ -1,0 +1,9 @@
+.sider {
+  height: calc(100vh - 48px - 64px);
+  padding-bottom: 0 !important;
+  background-color: #fff !important;
+
+  .ant-layout-sider-trigger {
+    background-color: #000 !important;
+  }
+}

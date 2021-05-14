@@ -7,6 +7,7 @@ import {
   IGalleryActions,
   IPhotosetGalleryData,
   IPhotosetEditedGalleryData,
+  IMenuItems,
 } from '../../interfaces/gallery.interfaces'
 import { IStore } from '../../interfaces/common.interfaces'
 
@@ -20,25 +21,29 @@ export const SAVE_EDITED_REQUEST = 'SAVE_EDITED_REQUEST'
 export const SAVE_EDITED_SUCCESS = 'SAVE_EDITED_SUCCESS'
 export const SAVE_EDITED_FAILURE = 'SAVE_EDITED_FAILURE'
 
+export const FETCH_MENU_ITEMS_REQUEST = 'FETCH_MENU_ITEMS_REQUEST'
+export const FETCH_MENU_ITEMS_FAILURE = 'FETCH_MENU_ITEMS_FAILURE'
+export const FETCH_MENU_ITEMS_SUCCESS = 'FETCH_MENU_ITEMS_SUCCESS'
+
 export const REMOVE_PHOTO = 'REMOVE_PHOTO'
 export const REORDER_PHOTOS = 'REORDER_PHOTOS'
 export const CLEAR_GALLERY = 'CLEAR_GALLERY'
 export const SET_COVER = 'SET_COVER'
-export const SET_INITIAL_STATE = 'SET_INITIAL_STATE'
+export const SET_NO_PHOTOSET_SELECTED = 'SET_NO_PHOTOSET_SELECTED'
 
-export const fetchPhotosetDataRequest = (
-  photosetID: string
-): ThunkAction<void, IStore, unknown, IGalleryActions> => async (dispatch) => {
-  dispatch({ type: FETCH_PHOTOSET_DATA_REQUEST })
+export const fetchPhotosetDataRequest =
+  (photosetID: string): ThunkAction<void, IStore, unknown, IGalleryActions> =>
+  async (dispatch) => {
+    dispatch({ type: FETCH_PHOTOSET_DATA_REQUEST })
 
-  try {
-    const { photos, coverImgSrc } = await API.getPhotoset(photosetID)
+    try {
+      const data = await API.getPhotoset(photosetID)
 
-    dispatch(fetchPhotosetDataSuccess({ photos, coverImgSrc }))
-  } catch (error) {
-    dispatch(fetchPhotosetDataFailure(error))
+      dispatch(fetchPhotosetDataSuccess(data))
+    } catch (error) {
+      dispatch(fetchPhotosetDataFailure(error))
+    }
   }
-}
 
 const fetchPhotosetDataSuccess = (data: IPhotosetGalleryData): IGalleryActions => ({
   type: FETCH_PHOTOSET_DATA_SUCCESS,
@@ -69,22 +74,24 @@ export const setCover = (coverImgSrc: string | null): IGalleryActions => ({
   payload: coverImgSrc,
 })
 
-export const saveEditedRequest = (
-  photosetID: string,
-  data: IPhotosetEditedGalleryData
-): ThunkAction<void, IStore, unknown, IGalleryActions> => async (dispatch) => {
-  dispatch({ type: SAVE_EDITED_REQUEST })
+export const saveEditedRequest =
+  (
+    photosetID: string,
+    data: IPhotosetEditedGalleryData
+  ): ThunkAction<void, IStore, unknown, IGalleryActions> =>
+  async (dispatch) => {
+    dispatch({ type: SAVE_EDITED_REQUEST })
 
-  try {
-    await API.updatePhotoset(photosetID, data)
+    try {
+      await API.updatePhotoset(photosetID, data)
 
-    dispatch(saveEditedSuccess())
-    message.success('Збережено!')
-  } catch (error) {
-    dispatch(saveEditedFailure(error))
-    message.error(error)
+      dispatch(saveEditedSuccess())
+      message.success('Збережено!')
+    } catch (error) {
+      dispatch(saveEditedFailure(error))
+      message.error(error)
+    }
   }
-}
 
 const saveEditedSuccess = (): IGalleryActions => ({
   type: SAVE_EDITED_SUCCESS,
@@ -95,22 +102,21 @@ const saveEditedFailure = (error: Error): IGalleryActions => ({
   payload: error,
 })
 
-export const uploadPhotoRequest = (
-  photosetID: string,
-  file: File
-): ThunkAction<void, IStore, unknown, IGalleryActions> => async (dispatch) => {
-  dispatch({ type: UPLOAD_PHOTO_REQUEST })
+export const uploadPhotoRequest =
+  (photosetID: string, file: File): ThunkAction<void, IStore, unknown, IGalleryActions> =>
+  async (dispatch) => {
+    dispatch({ type: UPLOAD_PHOTO_REQUEST })
 
-  try {
-    const photo = await API.uploadPhoto(photosetID, file)
+    try {
+      const photo = await API.uploadPhoto(photosetID, file)
 
-    dispatch(uploadPhotoSuccess(photo))
-    // message.success(`${file.name} file uploaded successfully.`)
-  } catch (error) {
-    dispatch(uploadPhotoFailure(error))
-    message.error(`${file.name} file upload failed. Error: ${error.message}`)
+      dispatch(uploadPhotoSuccess(photo))
+      // message.success(`${file.name} file uploaded successfully.`)
+    } catch (error) {
+      dispatch(uploadPhotoFailure(error))
+      message.error(`${file.name} file upload failed. Error: ${error.message}`)
+    }
   }
-}
 
 const uploadPhotoSuccess = (photo: IPhoto): IGalleryActions => ({
   type: UPLOAD_PHOTO_SUCCESS,
@@ -122,6 +128,29 @@ const uploadPhotoFailure = (error: Error): IGalleryActions => ({
   payload: error,
 })
 
-export const setInitialState = (): IGalleryActions => ({
-  type: SET_INITIAL_STATE,
+export const setNoPhotosetSelected = (): IGalleryActions => ({
+  type: SET_NO_PHOTOSET_SELECTED,
+})
+
+export const fetchMenuItemsRequest =
+  (): ThunkAction<void, IStore, unknown, IGalleryActions> => async (dispatch) => {
+    dispatch({ type: FETCH_MENU_ITEMS_REQUEST })
+
+    try {
+      const items = await API.getMenuItems()
+
+      dispatch(fetchMenuItemsSuccess(items))
+    } catch (error) {
+      dispatch(fetchMenuItemsFailure(error))
+    }
+  }
+
+export const fetchMenuItemsSuccess = (items: IMenuItems): IGalleryActions => ({
+  type: FETCH_MENU_ITEMS_SUCCESS,
+  payload: items,
+})
+
+export const fetchMenuItemsFailure = (error: Error): IGalleryActions => ({
+  type: FETCH_MENU_ITEMS_FAILURE,
+  payload: error,
 })

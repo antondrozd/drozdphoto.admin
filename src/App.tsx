@@ -19,11 +19,11 @@ const App = () => {
           </Link>
         </Header>
         <Layout>
-          <Redirect exact from="/" to="/editor" />
+          {/* <Redirect exact from="/" to="/editor" /> */}
           <Switch>
             <Route
               exact
-              path="/editor/:photosetType(album|serie)?/:id?"
+              path="/editor/:photosetType(portfolio-album|serie-album)?/:id?"
               component={GalleryEditorPage}
             />
             <Route path="*" render={() => <>404</>}></Route>

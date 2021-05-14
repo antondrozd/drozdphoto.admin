@@ -2,12 +2,10 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 
 import galleryReducer from './gallery/gallery.reducer'
-import menuReducer from './menu/menu.reducer'
 import modalReducer from './modal/modal.reducer'
 
 const rootReducer = combineReducers({
   gallery: galleryReducer,
-  menu: menuReducer,
   modal: modalReducer,
 })
 

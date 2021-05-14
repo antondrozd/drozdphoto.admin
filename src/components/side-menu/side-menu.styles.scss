@@ -1,5 +1,13 @@
 .side-menu {
   height: 100%;
+  max-height: calc(100vh - 48px - 64px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  &.ant-menu-inline-collapsed {
+    max-height: none;
+    overflow: visible;
+  }
 
   .side-menu-item {
     position: relative;

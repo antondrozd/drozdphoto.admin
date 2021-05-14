@@ -7,4 +7,8 @@ export const selectIsEdited = (state: IStore) => selectGallery(state).editing.st
 export const selectPhotosToDelete = (state: IStore) =>
   selectGallery(state).editing.photosToDelete
 export const selectCoverImgSrc = (state: IStore) => selectGallery(state).coverImgSrc
-export const selectIsPresent = (state: IStore) => selectGallery(state).isPresent
+export const selectIsRequestedPhotosetPresent = (state: IStore) =>
+  selectGallery(state).isRequestedPhotosetPresent
+export const selectMenuItems = (state: IStore) => selectGallery(state).menuItems
+export const selectCategories = (state: IStore) =>
+  selectGallery(state).menuItems['portfolio-album'].map((item) => item.label)
