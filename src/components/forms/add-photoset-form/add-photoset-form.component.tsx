@@ -45,7 +45,7 @@ const AddPhotosetForm = ({ form, photosetType, onFinish }: IProps) => {
       message.success('Створено!')
       form.resetFields()
       onFinish({ photosetType, photosetID: photoset.id })
-    } catch (error) {
+    } catch (error: any) {
       message.error(error.message)
     }
   }

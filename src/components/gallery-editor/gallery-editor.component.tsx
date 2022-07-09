@@ -128,7 +128,8 @@ const GalleryEditor = ({ photosetID }: IProps) => {
 
               <Dragger
                 name="file"
-                multiple={true}
+                  multiple
+                  //@ts-ignore
                 customRequest={uploadRequest}
                 beforeUpload={checkFileSize}
                 showUploadList={false}

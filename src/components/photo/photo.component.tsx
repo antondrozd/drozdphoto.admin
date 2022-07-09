@@ -2,7 +2,7 @@ import { CSSProperties } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { message } from 'antd'
 import { DeleteTwoTone, CrownTwoTone } from '@ant-design/icons'
-import { RenderImageProps } from 'react-photo-gallery'
+import { RenderImageProps } from 'react-photo-gallery-react17'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 
 import { removePhoto, setCover } from '../../redux/gallery/gallery.actions'

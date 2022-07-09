@@ -59,7 +59,7 @@ const SideMenu = ({ defaultActiveDropown, activePhotosetID }: IProps) => {
       if (location.pathname.includes(id)) {
         history.push('/editor')
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       message.error(error.message)
     }

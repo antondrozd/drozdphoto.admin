@@ -40,7 +40,7 @@ export const fetchPhotosetDataRequest =
       const data = await API.getPhotoset(photosetID)
 
       dispatch(fetchPhotosetDataSuccess(data))
-    } catch (error) {
+    } catch (error: any) {
       dispatch(fetchPhotosetDataFailure(error))
     }
   }
@@ -87,7 +87,7 @@ export const saveEditedRequest =
 
       dispatch(saveEditedSuccess())
       message.success('Збережено!')
-    } catch (error) {
+    } catch (error: any) {
       dispatch(saveEditedFailure(error))
       message.error(error)
     }
@@ -112,7 +112,7 @@ export const uploadPhotoRequest =
 
       dispatch(uploadPhotoSuccess(photo))
       // message.success(`${file.name} file uploaded successfully.`)
-    } catch (error) {
+    } catch (error: any) {
       dispatch(uploadPhotoFailure(error))
       message.error(`${file.name} file upload failed. Error: ${error.message}`)
     }
@@ -140,7 +140,7 @@ export const fetchMenuItemsRequest =
       const items = await API.getMenuItems()
 
       dispatch(fetchMenuItemsSuccess(items))
-    } catch (error) {
+    } catch (error: any) {
       dispatch(fetchMenuItemsFailure(error))
     }
   }
