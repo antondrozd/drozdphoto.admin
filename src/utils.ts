@@ -8,7 +8,6 @@ export class PortfolioAlbum implements IPortfolioAlbum {
   id: string
   label: string
   routePath: string
-  coverImgSrc: string | null
   type: 'portfolio-album'
   photos: IPhoto[]
 
@@ -16,7 +15,6 @@ export class PortfolioAlbum implements IPortfolioAlbum {
     this.id = id
     this.label = label
     this.routePath = `/${id}`
-    this.coverImgSrc = null
     this.type = 'portfolio-album'
     this.photos = []
   }
