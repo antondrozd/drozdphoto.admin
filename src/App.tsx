@@ -20,7 +20,7 @@ const App = () => {
           </Link>
         </Header>
         <Layout>
-          {/* <Redirect exact from="/" to="/editor" /> */}
+          <Redirect exact from="/" to="/editor" />
           <Switch>
             <Route
               exact
