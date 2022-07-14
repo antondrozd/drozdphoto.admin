@@ -1,18 +1,16 @@
 import { uid } from 'uid'
 import {
-  collection,
   getDocs,
   getDoc,
   query,
   where,
-  doc,
   setDoc,
   updateDoc,
   arrayUnion,
   deleteDoc,
 } from 'firebase/firestore'
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
-import { db, storage } from './firebase'
+import { uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
+import { ref, doc, collection } from './firebase'
 import {
   compressPhoto,
   createPlaceholder,
@@ -35,7 +33,7 @@ class API {
       'serie-album': [],
     }
 
-    const querySnapshot = await getDocs(collection(db, 'sets'))
+    const querySnapshot = await getDocs(collection('sets'))
 
     querySnapshot.forEach((doc) => {
       const { routePath, label, id, type } = doc.data() as IPhotoset
@@ -48,7 +46,7 @@ class API {
 
   getCategories = async () => {
     const photosetsSnapshot = await getDocs(
-      query(collection(db, 'sets'), where('type', '==', 'portfolio-album'))
+      query(collection('sets'), where('type', '==', 'portfolio-album'))
     )
 
     const categories = photosetsSnapshot.docs.map((doc) => {
@@ -61,7 +59,7 @@ class API {
   }
 
   getPhotoset = async (photosetID: string) => {
-    const docSnapshot = await getDoc(doc(db, `sets/${photosetID}`))
+    const docSnapshot = await getDoc(doc(`sets/${photosetID}`))
 
     if (!docSnapshot.exists) {
       const error = new Error('Document does not exist in firestore')
@@ -74,27 +72,27 @@ class API {
   }
 
   addPhotoset = async (photoset: IPhotoset) => {
-    return setDoc(doc(db, 'sets', photoset.id), photoset)
+    return setDoc(doc('sets', photoset.id), photoset)
   }
 
   updatePhotoset = async (photosetID: string, data: IPhotosetEditedGalleryData) => {
     const { photosToDelete, ...galleryData } = data
 
-    await updateDoc(doc(db, 'sets', photosetID), { ...galleryData })
+    await updateDoc(doc('sets', photosetID), { ...galleryData })
 
     this.deletePhotos(photosToDelete)
   }
 
   deletePhotos = (photos: IPhoto[]) => {
     photos.forEach(async (photo) => {
-      await deleteObject(ref(storage, photo.name))
-      await deleteObject(ref(storage, photo.thumbName))
-      await deleteObject(ref(storage, photo.placeholderName))
+      await deleteObject(ref(photo.name))
+      await deleteObject(ref(photo.thumbName))
+      await deleteObject(ref(photo.placeholderName))
     })
   }
 
   deletePhotoset = async (photosetID: string) => {
-    const docRef = doc(db, 'sets', photosetID)
+    const docRef = doc('sets', photosetID)
     const docSnapshot = await getDoc(docRef)
 
     if (!docSnapshot.exists) throw new Error('Document does not exist')
@@ -126,9 +124,9 @@ class API {
       type: compressedPhoto.type,
     })
 
-    const photoRef = ref(storage, photoName)
-    const thumbnailRef = ref(storage, thumbName)
-    const placeholderRef = ref(storage, placeholderName)
+    const photoRef = ref(photoName)
+    const thumbnailRef = ref(thumbName)
+    const placeholderRef = ref(placeholderName)
 
     const photoSnapshot = await uploadBytes(photoRef, photoToUpload)
     const thumbnailSnapshot = await uploadBytes(thumbnailRef, thumbnailToUpload)
@@ -152,7 +150,7 @@ class API {
       placeholderName,
     }
 
-    await updateDoc(doc(db, 'sets', photosetID), { photos: arrayUnion(photo) })
+    await updateDoc(doc('sets', photosetID), { photos: arrayUnion(photo) })
 
     return photo
   }

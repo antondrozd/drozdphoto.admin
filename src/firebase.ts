@@ -1,6 +1,11 @@
 import { initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
+import {
+  getFirestore,
+  doc as firestoreDoc,
+  collection as firestoreCollection,
+} from 'firebase/firestore'
+import { getStorage, ref as firebaseRef } from 'firebase/storage'
+import * as R from 'ramda'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyChdIJtbrb5nJeDTV8SQ-W1flNXrp2g89k',
@@ -15,5 +20,10 @@ const app = initializeApp(firebaseConfig)
 
 export const db = getFirestore(app)
 export const storage = getStorage(app)
+
+export const collection = R.partial(firestoreCollection, [db])
+export const doc = R.partial(firestoreDoc, [db])
+
+export const ref = R.partial(firebaseRef, [storage])
 
 export default app
