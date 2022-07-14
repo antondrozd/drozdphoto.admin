@@ -8,7 +8,7 @@ import { getStorage, ref as firebaseRef } from 'firebase/storage'
 import * as R from 'ramda'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyChdIJtbrb5nJeDTV8SQ-W1flNXrp2g89k',
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: 'drozd-photo-serverless.firebaseapp.com',
   projectId: 'drozd-photo-serverless',
   storageBucket: 'drozd-photo-serverless.appspot.com',
