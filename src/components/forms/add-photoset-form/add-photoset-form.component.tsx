@@ -36,8 +36,8 @@ const AddPhotosetForm = ({ form, photosetType, onFinish }: IProps) => {
     // prettier-ignore
     const photoset = 
       (
-        (photosetType === 'portfolio-album' && new PortfolioAlbum({ id: uid(), label })) ||
-        (photosetType === 'serie-album' && new SerieAlbum({ id: uid(), label, descr, category }))
+        (photosetType === PhotosetType.PORTFOLIO && new PortfolioAlbum({ id: uid(), label })) ||
+        (photosetType === PhotosetType.SERIE && new SerieAlbum({ id: uid(), label, descr, category }))
       ) as IPhotoset
 
     try {
@@ -71,12 +71,6 @@ const AddPhotosetForm = ({ form, photosetType, onFinish }: IProps) => {
               style={{ width: 200 }}
               placeholder="Search to Select"
               optionFilterProp="children"
-              // filterOption={(input, option) =>
-              //   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              // }
-              // filterSort={(optionA, optionB) =>
-              //   optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-              // }
             >
               {categories.map((category) => (
                 <Select.Option value={category} key={category}>

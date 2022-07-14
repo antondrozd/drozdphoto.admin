@@ -6,6 +6,7 @@ import ModalDisplayer from './components/modals/modal-displayer/modal-displayer.
 
 import logo from './assets/logo.png'
 import './app.styles.scss'
+import { PhotosetType } from './interfaces/common.interfaces'
 
 const { Header } = Layout
 
@@ -23,7 +24,7 @@ const App = () => {
           <Switch>
             <Route
               exact
-              path="/editor/:photosetType(portfolio-album|serie-album)?/:id?"
+              path={`/editor/:photosetType(${PhotosetType.PORTFOLIO}|${PhotosetType.SERIE})?/:id?`}
               component={GalleryEditorPage}
             />
             <Route path="*" render={() => <>404</>}></Route>

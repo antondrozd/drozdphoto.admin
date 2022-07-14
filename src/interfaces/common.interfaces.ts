@@ -6,4 +6,7 @@ export interface TypedAction<T extends string> {
 
 export interface IStore extends Store {}
 
-export type PhotosetType = 'portfolio-album' | 'serie-album'
+export enum PhotosetType {
+  PORTFOLIO = 'portfolio-album',
+  SERIE = 'serie-album',
+}

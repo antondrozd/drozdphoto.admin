@@ -19,8 +19,8 @@ const AddPhotosetModal = ({ photosetType, visible }: IProps) => {
   // prettier-ignore
   const title =
     (
-      (photosetType === 'portfolio-album' && 'Додати категорію') ||
-      (photosetType === 'serie-album' && 'Додати серію')
+      (photosetType === PhotosetType.PORTFOLIO && 'Додати категорію') ||
+      (photosetType === PhotosetType.SERIE && 'Додати серію')
     ) as string
 
   const [confirmLoading, setConfirmLoading] = useState(false)
@@ -62,7 +62,7 @@ export const AddAlbumModal = () => {
 
   return (
     <AddPhotosetModal
-      photosetType="portfolio-album"
+      photosetType={PhotosetType.PORTFOLIO}
       visible={activeModal === 'add-portfolio-album'}
     />
   )
@@ -73,7 +73,7 @@ export const AddSerieModal = () => {
 
   return (
     <AddPhotosetModal
-      photosetType="serie-album"
+      photosetType={PhotosetType.SERIE}
       visible={activeModal === 'add-serie-album'}
     />
   )
