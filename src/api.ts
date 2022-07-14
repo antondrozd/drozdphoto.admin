@@ -1,6 +1,18 @@
 import { uid } from 'uid'
-
-import firebase, { db, storage } from './firebase'
+import {
+  collection,
+  getDocs,
+  getDoc,
+  query,
+  where,
+  doc,
+  setDoc,
+  updateDoc,
+  arrayUnion,
+  deleteDoc,
+} from 'firebase/firestore'
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
+import { db, storage } from './firebase'
 import {
   compressPhoto,
   createPlaceholder,
@@ -23,7 +35,7 @@ class API {
       'serie-album': [],
     }
 
-    const querySnapshot = await db.collection('sets').get()
+    const querySnapshot = await getDocs(collection(db, 'sets'))
 
     querySnapshot.forEach((doc) => {
       const { routePath, label, id, type } = doc.data() as IPhotoset
@@ -35,10 +47,9 @@ class API {
   }
 
   getCategories = async () => {
-    const photosetsSnapshot = await db
-      .collection('sets')
-      .where('type', '==', 'portfolio-album')
-      .get()
+    const photosetsSnapshot = await getDocs(
+      query(collection(db, 'sets'), where('type', '==', 'portfolio-album'))
+    )
 
     const categories = photosetsSnapshot.docs.map((doc) => {
       const { label: category } = doc.data() as IPortfolioAlbum
@@ -50,7 +61,7 @@ class API {
   }
 
   getPhotoset = async (photosetID: string) => {
-    const docSnapshot = await db.doc(`sets/${photosetID}`).get()
+    const docSnapshot = await getDoc(doc(db, `sets/${photosetID}`))
 
     if (!docSnapshot.exists) {
       const error = new Error('Document does not exist in firestore')
@@ -63,34 +74,34 @@ class API {
   }
 
   addPhotoset = async (photoset: IPhotoset) => {
-    return db.collection('sets').doc(photoset.id).set(photoset)
+    return setDoc(doc(db, 'sets', photoset.id), photoset)
   }
 
   updatePhotoset = async (photosetID: string, data: IPhotosetEditedGalleryData) => {
     const { photosToDelete, ...galleryData } = data
 
-    await db.doc(`sets/${photosetID}`).update(galleryData)
+    await updateDoc(doc(db, 'sets', photosetID), { ...galleryData })
 
     this.deletePhotos(photosToDelete)
   }
 
   deletePhotos = (photos: IPhoto[]) => {
     photos.forEach(async (photo) => {
-      await storage.ref().child(photo.name).delete()
-      await storage.ref().child(photo.thumbName).delete()
-      await storage.ref().child(photo.placeholderName).delete()
+      await deleteObject(ref(storage, photo.name))
+      await deleteObject(ref(storage, photo.thumbName))
+      await deleteObject(ref(storage, photo.placeholderName))
     })
   }
 
   deletePhotoset = async (photosetID: string) => {
-    const docRef = db.doc(`sets/${photosetID}`)
-    const docSnapshot = await docRef.get()
+    const docRef = doc(db, 'sets', photosetID)
+    const docSnapshot = await getDoc(docRef)
 
     if (!docSnapshot.exists) throw new Error('Document does not exist')
 
     const { photos } = docSnapshot.data() as IPhotoset
 
-    await docRef.delete()
+    await deleteDoc(docRef)
     this.deletePhotos(photos)
   }
 
@@ -115,17 +126,17 @@ class API {
       type: compressedPhoto.type,
     })
 
-    const photoRef = storage.ref().child(photoName)
-    const thumbnailRef = storage.ref().child(thumbName)
-    const placeholderRef = storage.ref().child(placeholderName)
+    const photoRef = ref(storage, photoName)
+    const thumbnailRef = ref(storage, thumbName)
+    const placeholderRef = ref(storage, placeholderName)
 
-    const photoSnapshot = await photoRef.put(photoToUpload)
-    const thumbnailSnapshot = await thumbnailRef.put(thumbnailToUpload)
-    const placeholderSnapshot = await placeholderRef.put(placeholderToUpload)
+    const photoSnapshot = await uploadBytes(photoRef, photoToUpload)
+    const thumbnailSnapshot = await uploadBytes(thumbnailRef, thumbnailToUpload)
+    const placeholderSnapshot = await uploadBytes(placeholderRef, placeholderToUpload)
 
-    const photoDownloadURL = await photoSnapshot.ref.getDownloadURL()
-    const thumbnailDownloadURL = await thumbnailSnapshot.ref.getDownloadURL()
-    const placeholderDownloadURL = await placeholderSnapshot.ref.getDownloadURL()
+    const photoDownloadURL = await getDownloadURL(photoSnapshot.ref)
+    const thumbnailDownloadURL = await getDownloadURL(thumbnailSnapshot.ref)
+    const placeholderDownloadURL = await getDownloadURL(placeholderSnapshot.ref)
 
     const { width, height } = await getAspectRatioFromImageFile(photoToUpload)
 
@@ -141,14 +152,10 @@ class API {
       placeholderName,
     }
 
-    await db
-      .doc(`sets/${photosetID}`)
-      .update('photos', firebase.firestore.FieldValue.arrayUnion(photo))
+    await updateDoc(doc(db, 'sets', photosetID), { photos: arrayUnion(photo) })
 
     return photo
   }
 }
 
-const api = new API()
-
-export default api
+export default new API()
